@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import time
@@ -7,6 +8,8 @@ from typing import Any
 from urllib.parse import quote_plus, urlsplit
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 ROLE_ALIASES = {
     "se": "Software Engineer",
@@ -729,16 +732,29 @@ async def _search_tavily(
                 response = await client.post(TAVILY_API_URL, json=payload)
                 response.raise_for_status()
                 data = response.json()
-                for item in data.get("results") or []:
+                raw_results = data.get("results") or []
+                raw_count = len(raw_results)
+                url_rejected = 0
+                parse_rejected = 0
+                llm_rejected = 0
+                query_final = 0
+                for item in raw_results:
                     if not isinstance(item, dict):
+                        parse_rejected += 1
+                        continue
+                    raw_url = _clean_text(item.get("url"))
+                    if not raw_url.startswith(("http://", "https://")) or _url_quality(raw_url) < 0:
+                        url_rejected += 1
                         continue
                     parsed = _parse_listing(item, prefs)
                     if not parsed:
+                        parse_rejected += 1
                         continue
                     extraction = await _extract_job_posting(item, llm_client)
+                    if extraction is not None and not extraction.is_single_posting:
+                        llm_rejected += 1
+                        continue
                     if extraction is not None:
-                        if not extraction.is_single_posting:
-                            continue
                         if extraction.title:
                             parsed["title"] = _clean_text(extraction.title)
                         if extraction.company:
@@ -750,6 +766,12 @@ async def _search_tavily(
                         if extraction.apply_url and extraction.apply_url.startswith(("http://", "https://")):
                             parsed["url"] = extraction.apply_url
                     listings.append(parsed)
+                    query_final += 1
+                logger.info(
+                    "job_search_query_stats query=%r raw=%d url_rejected=%d "
+                    "parse_rejected=%d llm_rejected=%d final=%d",
+                    query, raw_count, url_rejected, parse_rejected, llm_rejected, query_final,
+                )
     except httpx.HTTPStatusError as exc:
         if exc.response.status_code in (401, 403):
             raise TavilyError("Job search is not configured correctly. Please check the Tavily API key on the server.") from exc
