@@ -1,0 +1,41 @@
+# Environment files: never commit real configuration or secrets
+.env
+.env.*
+*.env
+!.env.example
+!.env.*.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+.ruff_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.local
+
+# Build artifacts and archives: never ship .env files in zips
+*.zip
+*.tar.gz
+*.7z
+
+# Local uploaded documents may contain candidate PII
+backend/data/
+
+# Local data
+*.db
+*.sqlite
+*.sqlite3
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

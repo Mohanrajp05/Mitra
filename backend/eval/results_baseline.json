@@ -1,0 +1,2186 @@
+{
+  "summary": {
+    "cases": 15,
+    "completed_cases": 15,
+    "failed_cases": [],
+    "failed_candidates": 0,
+    "failed_llm_calls": 0,
+    "ranking_accuracy": 1.0,
+    "ranking_stability": 1.0,
+    "mean_score_spread": 0.0022,
+    "matched_precision": 0.833,
+    "missing_precision": 0.925,
+    "matched_hits": 60,
+    "matched_total": 72,
+    "missing_hits": 62,
+    "missing_total": 67,
+    "hallucinated_skills": 0,
+    "quotes_failing_check": 3,
+    "mode": "live",
+    "matcher": "live-agent-legacy",
+    "prompt_version": "legacy",
+    "runs_per_candidate": 3,
+    "elapsed_seconds": 815.4
+  },
+  "results": [
+    {
+      "case_id": "case-01-senior-backend",
+      "expected_top": "Ravi Deshmukh",
+      "ranked": [
+        {
+          "name": "Ravi Deshmukh",
+          "score": 1.0
+        },
+        {
+          "name": "Lena Fischer",
+          "score": 0.67
+        },
+        {
+          "name": "Tomasz Zielinski",
+          "score": 0.2
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Ravi Deshmukh": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience align closely with the job requirements. They have hands-on experience with Python, FastAPI, PostgreSQL, and Docker, which are all required skills. The evidence from their resume includes quotes such as 'Led the migration of an order-processing platform to FastAPI' and 'Designed PostgreSQL schemas for 40 million rows'. Their experience also exceeds the required 5 years.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "expected_missing": []
+        },
+        "Lena Fischer": {
+          "scores": [
+            0.67,
+            0.67,
+            0.67
+          ],
+          "matched": [
+            "Python",
+            "FastAPI"
+          ],
+          "missing": [
+            "PostgreSQL",
+            "Docker"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated skills in Python and FastAPI, but lacks experience with PostgreSQL and Docker. The strongest evidence for their skills comes from their work on an inventory tool using FastAPI. However, they have not administered a database like PostgreSQL and lack containerization experience.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python",
+            "FastAPI"
+          ],
+          "expected_missing": [
+            "PostgreSQL",
+            "Docker"
+          ]
+        },
+        "Tomasz Zielinski": {
+          "scores": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "matched": [],
+          "missing": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience do not match the requirements of the Senior Backend Engineer position. The candidate has some exposure to HTML and CSS through email templates, but this is not sufficient to demonstrate proficiency in these areas. Additionally, the candidate completed a short evening class on Python basics last year, but this does not indicate expertise in Python. The candidate's experience as a Graphic Designer is unrelated to the job requirements.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 6,
+        "matched_total": 6,
+        "missing_hits": 6,
+        "missing_total": 6
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-02-frontend",
+      "expected_top": "Meera Iyer",
+      "ranked": [
+        {
+          "name": "Meera Iyer",
+          "score": 1.0
+        },
+        {
+          "name": "Jonas Weber",
+          "score": 0.5
+        },
+        {
+          "name": "Arun Pillai",
+          "score": 0.2
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Meera Iyer": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "React",
+            "TypeScript",
+            "CSS"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience align closely with the job requirements. They have hands-on experience with React, TypeScript, and CSS, as evident from their work on a React component library and rebuilding design system styles in CSS custom properties. Their experience also demonstrates a strong understanding of accessibility and performance optimization.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "React",
+            "TypeScript",
+            "CSS"
+          ],
+          "expected_missing": []
+        },
+        "Jonas Weber": {
+          "scores": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "matched": [
+            "React"
+          ],
+          "missing": [
+            "TypeScript",
+            "CSS"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated proficiency in React, having rebuilt his portfolio in the language. However, he lacks experience with TypeScript and CSS, which are required skills for the position. The strongest evidence supporting the candidate's qualifications is his statement that he 'recently finished a React online course' (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "React"
+          ],
+          "expected_missing": [
+            "TypeScript",
+            "CSS"
+          ]
+        },
+        "Arun Pillai": {
+          "scores": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "matched": [],
+          "missing": [
+            "React",
+            "TypeScript",
+            "CSS"
+          ],
+          "unverified": [],
+          "explanation": "The candidate lacks the required skills for the Frontend Engineer position. They have some knowledge of React and TypeScript from team standups, but it's not enough to demonstrate proficiency. The strongest evidence is that they 'Heard about React and TypeScript in team standups' (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "React",
+            "TypeScript",
+            "CSS"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 4,
+        "missing_hits": 5,
+        "missing_total": 5
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-03-data-analyst",
+      "expected_top": "Sofia Marino",
+      "ranked": [
+        {
+          "name": "Sofia Marino",
+          "score": 1.0
+        },
+        {
+          "name": "Hana Kobayashi",
+          "score": 0.5
+        },
+        {
+          "name": "Derek Osei",
+          "score": 0.25
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Sofia Marino": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "SQL",
+            "Python",
+            "Tableau"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience align perfectly with the job requirements. They have demonstrated expertise in SQL, Python, and Tableau, and their experience working as a Data Analyst for Northgate Retail Group is relevant to the position. The strongest evidence comes from their resume, where they mention building and maintaining 12 Tableau dashboards used by the executive team.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "SQL",
+            "Python",
+            "Tableau"
+          ],
+          "expected_missing": []
+        },
+        "Derek Osei": {
+          "scores": [
+            0.25,
+            0.25,
+            0.25
+          ],
+          "matched": [
+            "SQL"
+          ],
+          "missing": [
+            "Python",
+            "Tableau"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated basic SQL skills, but is missing Python and Tableau skills. The strongest evidence for this match comes from the resume quote: 'Took an introductory SQL course on a learning platform and can write simple SELECT queries.'",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "SQL",
+            "Python",
+            "Tableau"
+          ]
+        },
+        "Hana Kobayashi": {
+          "scores": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "matched": [
+            "Python"
+          ],
+          "missing": [
+            "SQL",
+            "Tableau"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated proficiency in Python and its library pandas, which is a required skill. However, they lack experience with SQL and Tableau, both of which are essential for the Data Analyst role. The strongest evidence supporting their skills is: \"Uses Python scripts to reconcile large ledgers and is confident with pandas.\" (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python"
+          ],
+          "expected_missing": [
+            "SQL",
+            "Tableau"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 5,
+        "missing_hits": 4,
+        "missing_total": 4
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-04-ml-engineer",
+      "expected_top": "Vikram Shah",
+      "ranked": [
+        {
+          "name": "Vikram Shah",
+          "score": 1.0
+        },
+        {
+          "name": "Grace Njeri",
+          "score": 0.25
+        },
+        {
+          "name": "Peter Oswald",
+          "score": 0.2
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Vikram Shah": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "Python",
+            "PyTorch",
+            "MLOps"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience align closely with the job requirements. They have demonstrated expertise in PyTorch, MLOps, and recommendation systems. Their experience in shipping models to production and building an MLOps stack also matches the job description. The strongest evidence comes from their statement: 'Trains ranking and embedding models in PyTorch, with mixed-precision training on multi-GPU nodes.' (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python",
+            "PyTorch",
+            "MLOps"
+          ],
+          "expected_missing": []
+        },
+        "Grace Njeri": {
+          "scores": [
+            0.25,
+            0.25,
+            0.25
+          ],
+          "matched": [
+            "Python"
+          ],
+          "missing": [
+            "PyTorch",
+            "MLOps"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated proficiency in Python, which is a required skill. However, they lack experience with PyTorch and MLOps, which are also required skills. The candidate's production models were built using scikit-learn, not PyTorch, and deployment was handled by the data engineering team.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python"
+          ],
+          "expected_missing": [
+            "PyTorch",
+            "MLOps"
+          ]
+        },
+        "Peter Oswald": {
+          "scores": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "matched": [],
+          "missing": [
+            "Python",
+            "PyTorch",
+            "MLOps"
+          ],
+          "unverified": [],
+          "explanation": "The candidate lacks the required skills in Python, PyTorch, and MLOps. The only relevant skill mentioned is Windows Server administration, which is not applicable to this role. The strongest evidence for this assessment comes from the candidate's statement that they 'enjoyed' a two-day PyTorch workshop, but it does not indicate any professional experience or proficiency in machine learning.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 1
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 1
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 1
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Python",
+            "PyTorch",
+            "MLOps"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 4,
+        "missing_hits": 5,
+        "missing_total": 5
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 3
+    },
+    {
+      "case_id": "case-05-devops",
+      "expected_top": "Ingrid Solberg",
+      "ranked": [
+        {
+          "name": "Ingrid Solberg",
+          "score": 1.0
+        },
+        {
+          "name": "Yuki Tanaka",
+          "score": 0.9
+        },
+        {
+          "name": "Marcus Bell",
+          "score": 0.25
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Ingrid Solberg": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "Kubernetes",
+            "Terraform",
+            "AWS"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience match the job requirements closely. They have hands-on experience with Kubernetes, Terraform, and AWS, which are all required skills. The strongest evidence is their statement 'Operates three production Kubernetes clusters on AWS EKS', which demonstrates their ability to manage complex infrastructure.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Kubernetes",
+            "Terraform",
+            "AWS"
+          ],
+          "expected_missing": []
+        },
+        "Marcus Bell": {
+          "scores": [
+            0.25,
+            0.25,
+            0.25
+          ],
+          "matched": [
+            "Kubernetes"
+          ],
+          "missing": [
+            "Terraform",
+            "AWS"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has some experience with Kubernetes, as mentioned in their resume: \"Follows the Kubernetes and Terraform subreddits and runs a two-node Kubernetes cluster at home on spare hardware.\" However, they lack experience with Terraform and AWS. Their professional work is mostly virtual machines and shell scripts, which doesn't match the required skills.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Kubernetes",
+            "Terraform",
+            "AWS"
+          ]
+        },
+        "Yuki Tanaka": {
+          "scores": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "matched": [
+            "AWS",
+            "Terraform",
+            "Kubernetes"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills in AWS, Terraform, and Kubernetes are well-documented in their resume. They have hands-on experience with these technologies, having run workloads on AWS EC2 and S3 with Terraform-managed infrastructure, and introduced error budgets for the on-call process. The strongest evidence is from the following quote: 'Runs workloads on AWS EC2 and S3 with Terraform-managed infrastructure...'. (Source: Resume)",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "AWS",
+            "Terraform",
+            "Kubernetes"
+          ],
+          "expected_missing": []
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 6,
+        "matched_total": 7,
+        "missing_hits": 2,
+        "missing_total": 2
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-06-product-designer",
+      "expected_top": "Amara Diallo",
+      "ranked": [
+        {
+          "name": "Amara Diallo",
+          "score": 0.9
+        },
+        {
+          "name": "Ben Carter",
+          "score": 0.25
+        },
+        {
+          "name": "Chloe Martin",
+          "score": 0.25
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Amara Diallo": {
+          "scores": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "matched": [
+            "Figma",
+            "Usability testing"
+          ],
+          "missing": [
+            "Prototyping"
+          ],
+          "unverified": [],
+          "explanation": "The candidate's skills in Figma and usability testing are well-documented, with evidence of maintaining a Figma component library and running usability testing rounds. However, the skill 'Prototyping' is not explicitly mentioned as a separate skill, but it is implied through the mention of building interactive prototypes for engineer handoff.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Figma",
+            "Usability testing",
+            "Prototyping"
+          ],
+          "expected_missing": []
+        },
+        "Ben Carter": {
+          "scores": [
+            0.25,
+            0.25,
+            0.25
+          ],
+          "matched": [
+            "Figma"
+          ],
+          "missing": [
+            "Usability testing",
+            "Prototyping"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has Figma listed as a skill, which is one of the required skills. However, they have never run usability tests or built interactive prototypes, and their experience is in marketing design, not product design. The strongest evidence for this match is: \"Uses Figma daily for static layouts.\" (Source: Resume)",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Figma"
+          ],
+          "expected_missing": [
+            "Usability testing",
+            "Prototyping"
+          ]
+        },
+        "Chloe Martin": {
+          "scores": [
+            0.25,
+            0.25,
+            0.25
+          ],
+          "matched": [
+            "Figma"
+          ],
+          "missing": [
+            "Usability testing",
+            "Prototyping"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has some skills that match the job description, such as Figma, but is missing key skills like usability testing and prototyping. The strongest evidence for a matched skill is: \"Started watching Figma tutorial videos after hearing about a career switch.\" (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Figma",
+            "Usability testing",
+            "Prototyping"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 3,
+        "matched_total": 4,
+        "missing_hits": 4,
+        "missing_total": 5
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-07-qa-automation",
+      "expected_top": "Nadia Rahman",
+      "ranked": [
+        {
+          "name": "Nadia Rahman",
+          "score": 0.9
+        },
+        {
+          "name": "Fatima Al-Sayed",
+          "score": 0.83
+        },
+        {
+          "name": "Oleg Petrov",
+          "score": 0.2333
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0167,
+      "per_candidate": {
+        "Nadia Rahman": {
+          "scores": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "matched": [
+            "Selenium",
+            "Python"
+          ],
+          "missing": [
+            "CI/CD"
+          ],
+          "unverified": [],
+          "explanation": "The candidate's skills in Selenium and Python are well-documented, with a specific example of using pytest for testing. The CI/CD pipeline integration is also mentioned. However, the skill 'pytest' is not explicitly listed as a required skill, but it is implied by the context.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Selenium",
+            "Python",
+            "CI/CD"
+          ],
+          "expected_missing": []
+        },
+        "Oleg Petrov": {
+          "scores": [
+            0.2,
+            0.25,
+            0.25
+          ],
+          "matched": [
+            "Selenium"
+          ],
+          "missing": [
+            "Python",
+            "CI/CD"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has some knowledge of Selenium, having recorded UI checks with Selenium IDE recordings. However, they have never written WebDriver code and do not have experience with Python for automation testing. They also lack understanding of CI/CD pipelines beyond knowing what it stands for from process documentation. The strongest evidence is that the candidate knows what Selenium is and has used it to record some UI checks.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Selenium",
+            "Python",
+            "CI/CD"
+          ]
+        },
+        "Fatima Al-Sayed": {
+          "scores": [
+            0.83,
+            0.83,
+            0.83
+          ],
+          "matched": [
+            "Selenium",
+            "Python"
+          ],
+          "missing": [
+            "CI/CD"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated proficiency in Selenium and Python, two of the required skills. They have also set up a CI/CD pipeline in GitLab, which is close to the required skill of CI/CD. The only unverified skill is CI/CD, as it is not explicitly mentioned that they use other tools like Jenkins or Travis CI.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python",
+            "Selenium",
+            "CI/CD"
+          ],
+          "expected_missing": []
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 5,
+        "missing_hits": 2,
+        "missing_total": 4
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-08-mobile",
+      "expected_top": "Carlos Mendes",
+      "ranked": [
+        {
+          "name": "Carlos Mendes",
+          "score": 1.0
+        },
+        {
+          "name": "Aisha Bello",
+          "score": 0.67
+        },
+        {
+          "name": "Robert Klein",
+          "score": 0.2
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Carlos Mendes": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "Flutter",
+            "Dart",
+            "Firebase"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience match all the required skills for the job. The strongest evidence is from their work on a Flutter fitness app with 100k installs, which uses Firebase Auth, Firestore, and Cloud Functions. This demonstrates proficiency in Flutter, Dart, and Firebase.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Flutter",
+            "Firebase",
+            "Dart"
+          ],
+          "expected_missing": []
+        },
+        "Aisha Bello": {
+          "scores": [
+            0.67,
+            0.67,
+            0.67
+          ],
+          "matched": [
+            "Flutter",
+            "Dart"
+          ],
+          "missing": [
+            "Firebase"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated skills in Flutter and Dart, which are partially supported by their coursework. However, they lack experience with Firebase, a required skill for the job. Their experience in Kotlin is not directly applicable to this role. The strongest evidence of their skills comes from rebuilding a personal expense tracker in Flutter.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Flutter",
+            "Firebase",
+            "Dart"
+          ]
+        },
+        "Robert Klein": {
+          "scores": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "matched": [],
+          "missing": [
+            "Flutter",
+            "Firebase",
+            "Dart"
+          ],
+          "unverified": [],
+          "explanation": "The candidate lacks the required skills in Flutter, Firebase, and Dart. However, they do have some experience with Flutter through writing user stories for a rebuild. Their lack of relevant experience is a significant concern.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Flutter",
+            "Firebase",
+            "Dart"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 3,
+        "matched_total": 5,
+        "missing_hits": 4,
+        "missing_total": 4
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-09-data-engineer",
+      "expected_top": "Priya Venkatesan",
+      "ranked": [
+        {
+          "name": "Priya Venkatesan",
+          "score": 0.9
+        },
+        {
+          "name": "Daniel Kim",
+          "score": 0.5
+        },
+        {
+          "name": "Sven Larsen",
+          "score": 0.25
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Priya Venkatesan": {
+          "scores": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "matched": [
+            "Apache Spark",
+            "Airflow"
+          ],
+          "missing": [
+            "SQL"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated strong skills in Apache Spark and Airflow, with evidence of writing hourly batch jobs and authoring DAGs. SQL is listed as a skill, but it's not explicitly mentioned in the resume text; however, it's implied through 'Deep SQL tuning experience'. The strongest evidence for matched skills comes from the quote: \"Wrote hourly batch jobs in Apache Spark on EMR processing 2 TB per day.\" (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Apache Spark",
+            "Airflow",
+            "SQL"
+          ],
+          "expected_missing": []
+        },
+        "Daniel Kim": {
+          "scores": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "matched": [
+            "SQL"
+          ],
+          "missing": [
+            "Apache Spark",
+            "Airflow"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated proficiency in SQL, which is a required skill. However, they lack experience with Apache Spark and Airflow, both of which are essential for the Data Engineer role. The strongest evidence for their skills comes from their work on dbt models and SQL transformations.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "SQL"
+          ],
+          "expected_missing": [
+            "Apache Spark",
+            "Airflow"
+          ]
+        },
+        "Sven Larsen": {
+          "scores": [
+            0.25,
+            0.25,
+            0.25
+          ],
+          "matched": [
+            "Apache Spark"
+          ],
+          "missing": [
+            "Airflow",
+            "SQL"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has some knowledge of Apache Spark, which is a required skill. However, they lack experience with Airflow and SQL, which are also required skills. The strongest evidence for their skills is that they attended an Apache Spark summit and can explain RDDs and DataFrames in conversation.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Apache Spark",
+            "Airflow",
+            "SQL"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 3,
+        "matched_total": 4,
+        "missing_hits": 4,
+        "missing_total": 5
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-10-account-executive",
+      "expected_top": "Isabelle Fontaine",
+      "ranked": [
+        {
+          "name": "Isabelle Fontaine",
+          "score": 1.0
+        },
+        {
+          "name": "Tom Becker",
+          "score": 0.67
+        },
+        {
+          "name": "Renata Silva",
+          "score": 0.2
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Isabelle Fontaine": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "CRM",
+            "Lead generation",
+            "Negotiation"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience match all the required skills for the Account Executive - SaaS position. They have demonstrated expertise in CRM, lead generation, and negotiation, with evidence from their previous role at Cloudoran. Their experience of managing the full sales cycle in Salesforce CRM and achieving a quota attainment rate of 118% last year is particularly relevant.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "CRM",
+            "Lead generation",
+            "Negotiation"
+          ],
+          "expected_missing": []
+        },
+        "Tom Becker": {
+          "scores": [
+            0.67,
+            0.67,
+            0.67
+          ],
+          "matched": [
+            "CRM",
+            "Lead generation"
+          ],
+          "missing": [
+            "Negotiation"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated skills in CRM and lead generation. However, they lack negotiation experience. The strongest evidence for their skills is: 'Logs activity in HubSpot CRM daily.' (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "CRM",
+            "Lead generation"
+          ],
+          "expected_missing": [
+            "Negotiation"
+          ]
+        },
+        "Renata Silva": {
+          "scores": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "matched": [],
+          "missing": [
+            "CRM",
+            "Lead generation",
+            "Negotiation"
+          ],
+          "unverified": [],
+          "explanation": "The candidate lacks the required skills for the Account Executive - SaaS position. They have some negotiation experience from informal dealings with local suppliers, but it's not relevant to the role. The strongest evidence is that they attended a CRM vendor webinar once, which supports their unverified skill in Negotiation.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "CRM",
+            "Lead generation",
+            "Negotiation"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 5,
+        "matched_total": 5,
+        "missing_hits": 4,
+        "missing_total": 4
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-11-hr-generalist",
+      "expected_top": "Anita Kowalski",
+      "ranked": [
+        {
+          "name": "Anita Kowalski",
+          "score": 1.0
+        },
+        {
+          "name": "Joshua Adeyemi",
+          "score": 0.25
+        },
+        {
+          "name": "Karen Whitfield",
+          "score": 0.2167
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0167,
+      "per_candidate": {
+        "Anita Kowalski": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "Onboarding",
+            "HRIS",
+            "Employee relations"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's onboarding program includes buddy pairing and 90-day reviews, supporting 'Onboarding'. They administer Workday HRIS for position management, workflows, and reporting, supporting 'HRIS'. Employee relations cases are handled from intake through resolution with the legal team, supporting 'Employee relations'. The strongest evidence is: \"Owns the end-to-end onboarding program for 30 hires per month, including buddy pairing and 90-day reviews.\" (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Onboarding",
+            "HRIS",
+            "Employee relations"
+          ],
+          "expected_missing": []
+        },
+        "Joshua Adeyemi": {
+          "scores": [
+            0.25,
+            0.25,
+            0.25
+          ],
+          "matched": [
+            "Onboarding"
+          ],
+          "missing": [
+            "HRIS",
+            "Employee relations"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated onboarding skills through running orientation day twice a month. However, they lack experience with HRIS administration and employee relations. The strongest evidence for their onboarding skills comes from the quote: 'Helps with new-hire paperwork and runs orientation day twice a month.' (Source: Resume)",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Onboarding"
+          ],
+          "expected_missing": [
+            "HRIS",
+            "Employee relations"
+          ]
+        },
+        "Karen Whitfield": {
+          "scores": [
+            0.25,
+            0.2,
+            0.2
+          ],
+          "matched": [
+            "Office management"
+          ],
+          "missing": [
+            "Onboarding",
+            "HRIS",
+            "Employee relations"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has some relevant skills like 'Office management', but they are missing the key skills like 'Onboarding', 'HRIS', and 'Employee relations'. The strongest evidence for their skills is: \"Sat through an HRIS vendor demo during a procurement project.\" (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Onboarding",
+            "HRIS",
+            "Employee relations"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 5,
+        "missing_hits": 5,
+        "missing_total": 5
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-12-fullstack",
+      "expected_top": "Kwame Mensah",
+      "ranked": [
+        {
+          "name": "Kwame Mensah",
+          "score": 1.0
+        },
+        {
+          "name": "Ella Novak",
+          "score": 0.67
+        },
+        {
+          "name": "George Antoniou",
+          "score": 0.2
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Kwame Mensah": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "Node.js",
+            "React",
+            "MongoDB"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience match all required skills for a Full-Stack Developer position. They have demonstrated expertise in Node.js, React, and MongoDB, with evidence from their resume that they have built REST and GraphQL APIs, maintained a React dashboard, and worked with MongoDB Atlas. Their experience exceeds the required 3 years.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Node.js",
+            "React",
+            "MongoDB"
+          ],
+          "expected_missing": []
+        },
+        "Ella Novak": {
+          "scores": [
+            0.67,
+            0.67,
+            0.67
+          ],
+          "matched": [
+            "Node.js",
+            "React"
+          ],
+          "missing": [
+            "MongoDB"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated skills in Node.js and React, but is missing MongoDB experience. The strongest evidence for this match comes from the quote 'Consumes APIs built by the backend team in Node.js' (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "React"
+          ],
+          "expected_missing": [
+            "Node.js",
+            "MongoDB"
+          ]
+        },
+        "George Antoniou": {
+          "scores": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "matched": [],
+          "missing": [
+            "Node.js",
+            "React",
+            "MongoDB"
+          ],
+          "unverified": [],
+          "explanation": "The candidate lists Node.js, React, and MongoDB as technologies he is exploring, but there is no evidence that he has built a web application or has any hands-on experience with these technologies. The required skills are absent from the resume, and the candidate's experience is not relevant to the position.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Node.js",
+            "React",
+            "MongoDB"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 5,
+        "missing_hits": 4,
+        "missing_total": 4
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-13-business-analyst",
+      "expected_top": "Chiara Rossi",
+      "ranked": [
+        {
+          "name": "Chiara Rossi",
+          "score": 1.0
+        },
+        {
+          "name": "Mia Andersen",
+          "score": 0.5
+        },
+        {
+          "name": "Victor Hugo Alves",
+          "score": 0.5
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Chiara Rossi": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "SQL",
+            "Stakeholder management",
+            "Process mapping"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills and experience align well with the job requirements. They have demonstrated expertise in SQL, stakeholder management, and process mapping. The strongest evidence comes from their resume, where they mention writing SQL against the claims warehouse to validate requirements with real data. Additionally, they facilitate stakeholder management across multiple departments and document current and future state with BPMN process mapping.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "SQL",
+            "Stakeholder management",
+            "Process mapping"
+          ],
+          "expected_missing": []
+        },
+        "Victor Hugo Alves": {
+          "scores": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "matched": [
+            "SQL"
+          ],
+          "missing": [
+            "Stakeholder management",
+            "Process mapping"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated some skills relevant to the job, such as writing queries in SQL. However, they are missing key skills like stakeholder management and process mapping. The strongest evidence for their skills is: 'Writes queries in the support tool's filter language; took an intro SQL course last year.' (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "SQL",
+            "Stakeholder management",
+            "Process mapping"
+          ]
+        },
+        "Mia Andersen": {
+          "scores": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "matched": [
+            "Process mapping"
+          ],
+          "missing": [
+            "SQL",
+            "Stakeholder management"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated process mapping skills through their work at Nordwind Construction. However, they lack SQL and stakeholder management skills. The strongest evidence for this assessment comes from the quote 'Maintains schedules and draws process flow diagrams in Visio for site logistics.' (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Process mapping"
+          ],
+          "expected_missing": [
+            "SQL",
+            "Stakeholder management"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 5,
+        "missing_hits": 4,
+        "missing_total": 4
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-14-security-engineer",
+      "expected_top": "Elena Petrova",
+      "ranked": [
+        {
+          "name": "Elena Petrova",
+          "score": 0.9
+        },
+        {
+          "name": "Adam Silverman",
+          "score": 0.5
+        },
+        {
+          "name": "Bruno Costa",
+          "score": 0.2
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Elena Petrova": {
+          "scores": [
+            0.9,
+            0.9,
+            0.9
+          ],
+          "matched": [
+            "Penetration testing",
+            "OWASP"
+          ],
+          "missing": [
+            "Python"
+          ],
+          "unverified": [],
+          "explanation": "The candidate's skills in penetration testing and OWASP are well-documented, with evidence from their resume that they have performed penetration testing on web platforms and built internal tooling in Python to re-test OWASP Top 10 findings. The only unverified skill is Burp Suite, which is mentioned as a skill but not explicitly demonstrated in the resume. The candidate's experience exceeds the required amount.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Penetration testing",
+            "OWASP",
+            "Python"
+          ],
+          "expected_missing": []
+        },
+        "Adam Silverman": {
+          "scores": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "matched": [
+            "Python"
+          ],
+          "missing": [
+            "Penetration testing",
+            "OWASP"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated proficiency in Python and OWASP controls through their work at Quillon Bank. However, they have not performed penetration testing themselves and lack experience with this critical skill. The strongest evidence for their skills comes from writing Python scripts to reconcile control inventories: \"Wrote Python scripts to reconcile control inventories.\" (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python"
+          ],
+          "expected_missing": [
+            "Penetration testing",
+            "OWASP"
+          ]
+        },
+        "Bruno Costa": {
+          "scores": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "matched": [
+            "OWASP"
+          ],
+          "missing": [
+            "Penetration testing",
+            "Python"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has some basic knowledge of OWASP from reading the Top 10 list. However, penetration testing and Python skills are not demonstrated in the resume. The strongest evidence is that the candidate read the OWASP Top 10 list: 'Completed a beginner penetration testing course on a MOOC platform and read the OWASP Top 10 list.'",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Penetration testing",
+            "OWASP",
+            "Python"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 3,
+        "matched_total": 4,
+        "missing_hits": 4,
+        "missing_total": 5
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-15-technical-writer",
+      "expected_top": "Julia Sørensen",
+      "ranked": [
+        {
+          "name": "Julia Sørensen",
+          "score": 1.0
+        },
+        {
+          "name": "Michael Osei",
+          "score": 0.25
+        },
+        {
+          "name": "Sarah Whitmore",
+          "score": 0.2
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Julia Sørensen": {
+          "scores": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "matched": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "The candidate's skills in API documentation, Markdown, and Developer tools are all explicitly mentioned in the resume. The strongest evidence is 'Owns the API documentation set for a payments platform, generated from OpenAPI specs with custom guides.' (Source: Resume).",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ],
+          "expected_missing": []
+        },
+        "Michael Osei": {
+          "scores": [
+            0.25,
+            0.25,
+            0.25
+          ],
+          "matched": [
+            "Markdown"
+          ],
+          "missing": [
+            "API documentation",
+            "Developer tools"
+          ],
+          "unverified": [],
+          "explanation": "The candidate has demonstrated basic knowledge of Markdown, which is a required skill. However, they lack experience with API documentation and developer tools, which are essential for the Technical Writer role. The strongest evidence for their skills is their use of Markdown files on shared drive to write onboarding guides.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ]
+        },
+        "Sarah Whitmore": {
+          "scores": [
+            0.2,
+            0.2,
+            0.2
+          ],
+          "matched": [],
+          "missing": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ],
+          "unverified": [],
+          "explanation": "The candidate's skills in Copywriting and SEO do not match the required skills for a Technical Writer. The candidate mentions Markdown, API documentation, and developer tools as familiar tools from a self-study plan, but these are unverified skills. The strongest evidence is that the candidate attended a webinar about API documentation trends.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            },
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 3,
+        "matched_total": 4,
+        "missing_hits": 5,
+        "missing_total": 5
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    }
+  ]
+}

@@ -1,0 +1,1724 @@
+{
+  "summary": {
+    "cases": 15,
+    "completed_cases": 15,
+    "failed_cases": [],
+    "failed_candidates": 0,
+    "failed_llm_calls": 0,
+    "ranking_accuracy": 0.333,
+    "ranking_stability": 0.333,
+    "mean_score_spread": 0.0,
+    "matched_precision": 0.556,
+    "missing_precision": 1.0,
+    "matched_hits": 65,
+    "matched_total": 117,
+    "missing_hits": 21,
+    "missing_total": 21,
+    "hallucinated_skills": 0,
+    "quotes_failing_check": 0,
+    "mode": "offline",
+    "matcher": "offline-v1",
+    "prompt_version": "n/a",
+    "runs_per_candidate": 1,
+    "elapsed_seconds": 0.0
+  },
+  "results": [
+    {
+      "case_id": "case-01-senior-backend",
+      "expected_top": "Ravi Deshmukh",
+      "ranked": [
+        {
+          "name": "Ravi Deshmukh",
+          "score": 1.0
+        },
+        {
+          "name": "Lena Fischer",
+          "score": 0.75
+        },
+        {
+          "name": "Tomasz Zielinski",
+          "score": 0.25
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Ravi Deshmukh": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "expected_missing": []
+        },
+        "Lena Fischer": {
+          "scores": [
+            0.75
+          ],
+          "matched": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL"
+          ],
+          "missing": [
+            "Docker"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python",
+            "FastAPI"
+          ],
+          "expected_missing": [
+            "PostgreSQL",
+            "Docker"
+          ]
+        },
+        "Tomasz Zielinski": {
+          "scores": [
+            0.25
+          ],
+          "matched": [
+            "Python"
+          ],
+          "missing": [
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 6,
+        "matched_total": 8,
+        "missing_hits": 4,
+        "missing_total": 4
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-02-frontend",
+      "expected_top": "Meera Iyer",
+      "ranked": [
+        {
+          "name": "Meera Iyer",
+          "score": 1.0
+        },
+        {
+          "name": "Arun Pillai",
+          "score": 0.6667
+        },
+        {
+          "name": "Jonas Weber",
+          "score": 0.6667
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Meera Iyer": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "React",
+            "TypeScript",
+            "CSS"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "React",
+            "TypeScript",
+            "CSS"
+          ],
+          "expected_missing": []
+        },
+        "Jonas Weber": {
+          "scores": [
+            0.6667
+          ],
+          "matched": [
+            "React",
+            "TypeScript"
+          ],
+          "missing": [
+            "CSS"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "React"
+          ],
+          "expected_missing": [
+            "TypeScript",
+            "CSS"
+          ]
+        },
+        "Arun Pillai": {
+          "scores": [
+            0.6667
+          ],
+          "matched": [
+            "React",
+            "TypeScript"
+          ],
+          "missing": [
+            "CSS"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "React",
+            "TypeScript",
+            "CSS"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 7,
+        "missing_hits": 2,
+        "missing_total": 2
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-03-data-analyst",
+      "expected_top": "Sofia Marino",
+      "ranked": [
+        {
+          "name": "Hana Kobayashi",
+          "score": 1.0
+        },
+        {
+          "name": "Sofia Marino",
+          "score": 1.0
+        },
+        {
+          "name": "Derek Osei",
+          "score": 0.6667
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Sofia Marino": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "SQL",
+            "Python",
+            "Tableau"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "SQL",
+            "Python",
+            "Tableau"
+          ],
+          "expected_missing": []
+        },
+        "Derek Osei": {
+          "scores": [
+            0.6667
+          ],
+          "matched": [
+            "SQL",
+            "Tableau"
+          ],
+          "missing": [
+            "Python"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "SQL",
+            "Python",
+            "Tableau"
+          ]
+        },
+        "Hana Kobayashi": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "SQL",
+            "Python",
+            "Tableau"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python"
+          ],
+          "expected_missing": [
+            "SQL",
+            "Tableau"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 8,
+        "missing_hits": 1,
+        "missing_total": 1
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-04-ml-engineer",
+      "expected_top": "Vikram Shah",
+      "ranked": [
+        {
+          "name": "Grace Njeri",
+          "score": 1.0
+        },
+        {
+          "name": "Vikram Shah",
+          "score": 1.0
+        },
+        {
+          "name": "Peter Oswald",
+          "score": 0.3333
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Vikram Shah": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Python",
+            "PyTorch",
+            "MLOps"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python",
+            "PyTorch",
+            "MLOps"
+          ],
+          "expected_missing": []
+        },
+        "Grace Njeri": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Python",
+            "PyTorch",
+            "MLOps"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python"
+          ],
+          "expected_missing": [
+            "PyTorch",
+            "MLOps"
+          ]
+        },
+        "Peter Oswald": {
+          "scores": [
+            0.3333
+          ],
+          "matched": [
+            "PyTorch"
+          ],
+          "missing": [
+            "Python",
+            "MLOps"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Python",
+            "PyTorch",
+            "MLOps"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 7,
+        "missing_hits": 2,
+        "missing_total": 2
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-05-devops",
+      "expected_top": "Ingrid Solberg",
+      "ranked": [
+        {
+          "name": "Ingrid Solberg",
+          "score": 1.0
+        },
+        {
+          "name": "Yuki Tanaka",
+          "score": 1.0
+        },
+        {
+          "name": "Marcus Bell",
+          "score": 0.6667
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Ingrid Solberg": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Kubernetes",
+            "Terraform",
+            "AWS"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Kubernetes",
+            "Terraform",
+            "AWS"
+          ],
+          "expected_missing": []
+        },
+        "Marcus Bell": {
+          "scores": [
+            0.6667
+          ],
+          "matched": [
+            "Kubernetes",
+            "Terraform"
+          ],
+          "missing": [
+            "AWS"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Kubernetes",
+            "Terraform",
+            "AWS"
+          ]
+        },
+        "Yuki Tanaka": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Kubernetes",
+            "Terraform",
+            "AWS"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "AWS",
+            "Terraform",
+            "Kubernetes"
+          ],
+          "expected_missing": []
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 6,
+        "matched_total": 8,
+        "missing_hits": 1,
+        "missing_total": 1
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-06-product-designer",
+      "expected_top": "Amara Diallo",
+      "ranked": [
+        {
+          "name": "Amara Diallo",
+          "score": 1.0
+        },
+        {
+          "name": "Chloe Martin",
+          "score": 0.6667
+        },
+        {
+          "name": "Ben Carter",
+          "score": 0.3333
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Amara Diallo": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Figma",
+            "Usability testing",
+            "Prototyping"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Figma",
+            "Usability testing",
+            "Prototyping"
+          ],
+          "expected_missing": []
+        },
+        "Ben Carter": {
+          "scores": [
+            0.3333
+          ],
+          "matched": [
+            "Figma"
+          ],
+          "missing": [
+            "Usability testing",
+            "Prototyping"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Figma"
+          ],
+          "expected_missing": [
+            "Usability testing",
+            "Prototyping"
+          ]
+        },
+        "Chloe Martin": {
+          "scores": [
+            0.6667
+          ],
+          "matched": [
+            "Figma",
+            "Usability testing"
+          ],
+          "missing": [
+            "Prototyping"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Figma",
+            "Usability testing",
+            "Prototyping"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 6,
+        "missing_hits": 3,
+        "missing_total": 3
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-07-qa-automation",
+      "expected_top": "Nadia Rahman",
+      "ranked": [
+        {
+          "name": "Fatima Al-Sayed",
+          "score": 1.0
+        },
+        {
+          "name": "Nadia Rahman",
+          "score": 1.0
+        },
+        {
+          "name": "Oleg Petrov",
+          "score": 1.0
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Nadia Rahman": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Selenium",
+            "Python",
+            "CI/CD"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Selenium",
+            "Python",
+            "CI/CD"
+          ],
+          "expected_missing": []
+        },
+        "Oleg Petrov": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Selenium",
+            "Python",
+            "CI/CD"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Selenium",
+            "Python",
+            "CI/CD"
+          ]
+        },
+        "Fatima Al-Sayed": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Selenium",
+            "Python",
+            "CI/CD"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python",
+            "Selenium",
+            "CI/CD"
+          ],
+          "expected_missing": []
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 6,
+        "matched_total": 9,
+        "missing_hits": 0,
+        "missing_total": 0
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-08-mobile",
+      "expected_top": "Carlos Mendes",
+      "ranked": [
+        {
+          "name": "Aisha Bello",
+          "score": 1.0
+        },
+        {
+          "name": "Carlos Mendes",
+          "score": 1.0
+        },
+        {
+          "name": "Robert Klein",
+          "score": 0.6667
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Carlos Mendes": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Flutter",
+            "Firebase",
+            "Dart"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Flutter",
+            "Firebase",
+            "Dart"
+          ],
+          "expected_missing": []
+        },
+        "Aisha Bello": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Flutter",
+            "Firebase",
+            "Dart"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Flutter",
+            "Firebase",
+            "Dart"
+          ]
+        },
+        "Robert Klein": {
+          "scores": [
+            0.6667
+          ],
+          "matched": [
+            "Flutter",
+            "Firebase"
+          ],
+          "missing": [
+            "Dart"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Flutter",
+            "Firebase",
+            "Dart"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 3,
+        "matched_total": 8,
+        "missing_hits": 1,
+        "missing_total": 1
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-09-data-engineer",
+      "expected_top": "Priya Venkatesan",
+      "ranked": [
+        {
+          "name": "Daniel Kim",
+          "score": 1.0
+        },
+        {
+          "name": "Priya Venkatesan",
+          "score": 1.0
+        },
+        {
+          "name": "Sven Larsen",
+          "score": 1.0
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Priya Venkatesan": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Apache Spark",
+            "Airflow",
+            "SQL"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Apache Spark",
+            "Airflow",
+            "SQL"
+          ],
+          "expected_missing": []
+        },
+        "Daniel Kim": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Apache Spark",
+            "Airflow",
+            "SQL"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "SQL"
+          ],
+          "expected_missing": [
+            "Apache Spark",
+            "Airflow"
+          ]
+        },
+        "Sven Larsen": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Apache Spark",
+            "Airflow",
+            "SQL"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Apache Spark",
+            "Airflow",
+            "SQL"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 9,
+        "missing_hits": 0,
+        "missing_total": 0
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-10-account-executive",
+      "expected_top": "Isabelle Fontaine",
+      "ranked": [
+        {
+          "name": "Isabelle Fontaine",
+          "score": 1.0
+        },
+        {
+          "name": "Tom Becker",
+          "score": 1.0
+        },
+        {
+          "name": "Renata Silva",
+          "score": 0.3333
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Isabelle Fontaine": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "CRM",
+            "Lead generation",
+            "Negotiation"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "CRM",
+            "Lead generation",
+            "Negotiation"
+          ],
+          "expected_missing": []
+        },
+        "Tom Becker": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "CRM",
+            "Lead generation",
+            "Negotiation"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "CRM",
+            "Lead generation"
+          ],
+          "expected_missing": [
+            "Negotiation"
+          ]
+        },
+        "Renata Silva": {
+          "scores": [
+            0.3333
+          ],
+          "matched": [
+            "CRM"
+          ],
+          "missing": [
+            "Lead generation",
+            "Negotiation"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "CRM",
+            "Lead generation",
+            "Negotiation"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 5,
+        "matched_total": 7,
+        "missing_hits": 2,
+        "missing_total": 2
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-11-hr-generalist",
+      "expected_top": "Anita Kowalski",
+      "ranked": [
+        {
+          "name": "Anita Kowalski",
+          "score": 1.0
+        },
+        {
+          "name": "Joshua Adeyemi",
+          "score": 1.0
+        },
+        {
+          "name": "Karen Whitfield",
+          "score": 0.3333
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Anita Kowalski": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Onboarding",
+            "HRIS",
+            "Employee relations"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Onboarding",
+            "HRIS",
+            "Employee relations"
+          ],
+          "expected_missing": []
+        },
+        "Joshua Adeyemi": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Onboarding",
+            "HRIS",
+            "Employee relations"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Onboarding"
+          ],
+          "expected_missing": [
+            "HRIS",
+            "Employee relations"
+          ]
+        },
+        "Karen Whitfield": {
+          "scores": [
+            0.3333
+          ],
+          "matched": [
+            "HRIS"
+          ],
+          "missing": [
+            "Onboarding",
+            "Employee relations"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Onboarding",
+            "HRIS",
+            "Employee relations"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 7,
+        "missing_hits": 2,
+        "missing_total": 2
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-12-fullstack",
+      "expected_top": "Kwame Mensah",
+      "ranked": [
+        {
+          "name": "Ella Novak",
+          "score": 1.0
+        },
+        {
+          "name": "George Antoniou",
+          "score": 1.0
+        },
+        {
+          "name": "Kwame Mensah",
+          "score": 1.0
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Kwame Mensah": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Node.js",
+            "React",
+            "MongoDB"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Node.js",
+            "React",
+            "MongoDB"
+          ],
+          "expected_missing": []
+        },
+        "Ella Novak": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Node.js",
+            "React",
+            "MongoDB"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "React"
+          ],
+          "expected_missing": [
+            "Node.js",
+            "MongoDB"
+          ]
+        },
+        "George Antoniou": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Node.js",
+            "React",
+            "MongoDB"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Node.js",
+            "React",
+            "MongoDB"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 9,
+        "missing_hits": 0,
+        "missing_total": 0
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-13-business-analyst",
+      "expected_top": "Chiara Rossi",
+      "ranked": [
+        {
+          "name": "Chiara Rossi",
+          "score": 1.0
+        },
+        {
+          "name": "Mia Andersen",
+          "score": 0.6667
+        },
+        {
+          "name": "Victor Hugo Alves",
+          "score": 0.6667
+        }
+      ],
+      "rank_correct": true,
+      "rank_stable": true,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Chiara Rossi": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "SQL",
+            "Stakeholder management",
+            "Process mapping"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "SQL",
+            "Stakeholder management",
+            "Process mapping"
+          ],
+          "expected_missing": []
+        },
+        "Victor Hugo Alves": {
+          "scores": [
+            0.6667
+          ],
+          "matched": [
+            "SQL",
+            "Process mapping"
+          ],
+          "missing": [
+            "Stakeholder management"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "SQL",
+            "Stakeholder management",
+            "Process mapping"
+          ]
+        },
+        "Mia Andersen": {
+          "scores": [
+            0.6667
+          ],
+          "matched": [
+            "SQL",
+            "Process mapping"
+          ],
+          "missing": [
+            "Stakeholder management"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Process mapping"
+          ],
+          "expected_missing": [
+            "SQL",
+            "Stakeholder management"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 7,
+        "missing_hits": 2,
+        "missing_total": 2
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-14-security-engineer",
+      "expected_top": "Elena Petrova",
+      "ranked": [
+        {
+          "name": "Adam Silverman",
+          "score": 1.0
+        },
+        {
+          "name": "Bruno Costa",
+          "score": 1.0
+        },
+        {
+          "name": "Elena Petrova",
+          "score": 1.0
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Elena Petrova": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Penetration testing",
+            "OWASP",
+            "Python"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Penetration testing",
+            "OWASP",
+            "Python"
+          ],
+          "expected_missing": []
+        },
+        "Adam Silverman": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Penetration testing",
+            "OWASP",
+            "Python"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "Python"
+          ],
+          "expected_missing": [
+            "Penetration testing",
+            "OWASP"
+          ]
+        },
+        "Bruno Costa": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "Penetration testing",
+            "OWASP",
+            "Python"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "Penetration testing",
+            "OWASP",
+            "Python"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 4,
+        "matched_total": 9,
+        "missing_hits": 0,
+        "missing_total": 0
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    },
+    {
+      "case_id": "case-15-technical-writer",
+      "expected_top": "Julia Sørensen",
+      "ranked": [
+        {
+          "name": "Julia Sørensen",
+          "score": 1.0
+        },
+        {
+          "name": "Sarah Whitmore",
+          "score": 1.0
+        },
+        {
+          "name": "Michael Osei",
+          "score": 0.6667
+        }
+      ],
+      "rank_correct": false,
+      "rank_stable": false,
+      "complete": true,
+      "failed_candidates": [],
+      "mean_spread": 0.0,
+      "per_candidate": {
+        "Julia Sørensen": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ],
+          "expected_missing": []
+        },
+        "Michael Osei": {
+          "scores": [
+            0.6667
+          ],
+          "matched": [
+            "Markdown",
+            "Developer tools"
+          ],
+          "missing": [
+            "API documentation"
+          ],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ]
+        },
+        "Sarah Whitmore": {
+          "scores": [
+            1.0
+          ],
+          "matched": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ],
+          "missing": [],
+          "unverified": [],
+          "explanation": "Deterministic offline scoring based on skill presence.",
+          "dropped_by_postcheck": [
+            {
+              "dropped_skills": [],
+              "dropped_quotes": 0
+            }
+          ],
+          "errors": [],
+          "expected_matched": [],
+          "expected_missing": [
+            "API documentation",
+            "Markdown",
+            "Developer tools"
+          ]
+        }
+      },
+      "skill_metrics": {
+        "matched_hits": 3,
+        "matched_total": 8,
+        "missing_hits": 1,
+        "missing_total": 1
+      },
+      "hallucinated_skills": 0,
+      "quotes_failing_check": 0
+    }
+  ]
+}

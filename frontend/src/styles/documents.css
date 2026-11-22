@@ -1,0 +1,339 @@
+/* Resume upload page. Every rule is scoped under .np so it reuses the new-page
+   design tokens and never leaks into the older pages. */
+
+.np .doc-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.np .doc-card {
+  padding: 22px;
+}
+
+.np .doc-card .card-head {
+  margin-bottom: 16px;
+}
+
+.np .doc-card .card-head .muted {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+}
+
+.np .doc-drop {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 30px 20px;
+  text-align: center;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.np .doc-drop:hover,
+.np .doc-drop:focus-visible,
+.np .doc-drop.is-dragging {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  outline: none;
+}
+
+.np .doc-drop-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--primary-soft);
+  color: var(--primary-text);
+}
+
+.np .doc-drop:hover .doc-drop-icon,
+.np .doc-drop.is-dragging .doc-drop-icon {
+  background: var(--surface);
+}
+
+.np .doc-drop-icon .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.np .doc-drop strong {
+  font-size: 14px;
+}
+
+.np .doc-drop .muted {
+  font-size: 12.5px;
+}
+
+.np .doc-drop-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.np .doc-source {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.np .doc-source .field {
+  flex: 1;
+  min-width: 0;
+}
+
+.np .doc-source .field .muted {
+  font-size: 12px;
+}
+
+.np .doc-selected {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.np .doc-selected > .icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--primary-text);
+}
+
+.np .doc-selected-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.np .doc-selected-main strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.np .doc-selected-main .muted {
+  font-size: 12px;
+}
+
+.np .doc-progress {
+  margin-top: 16px;
+}
+
+.np .doc-progress-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.np .doc-progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.np .doc-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), var(--violet));
+  transition: width 0.3s ease;
+}
+
+.np .doc-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12.5px;
+}
+
+.np .doc-alert .icon {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin-top: 1px;
+}
+
+.np .doc-alert .btn {
+  margin-left: auto;
+  flex: none;
+}
+
+.np .doc-alert-danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.np .doc-alert-success {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.np .doc-tips {
+  display: grid;
+  gap: 16px;
+}
+
+.np .doc-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.np .doc-tip > .icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  color: var(--primary-text);
+}
+
+.np .doc-tip strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.np .doc-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.np .doc-row {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.np .doc-row:hover {
+  background: var(--surface-2);
+}
+
+.np .doc-file-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--primary-soft);
+  color: var(--primary-text);
+}
+
+.np .doc-file-icon .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.np .doc-file-main {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.np .doc-file-main strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13.5px;
+}
+
+.np .doc-file-main .muted {
+  font-size: 12px;
+}
+
+.np .doc-delete:hover:not(:disabled) {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.np .doc-empty {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 34px 20px;
+  text-align: center;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.np .doc-empty > .icon {
+  width: 22px;
+  height: 22px;
+  color: var(--text-3);
+}
+
+.np .doc-empty strong {
+  color: var(--text);
+  font-size: 13.5px;
+}
+
+.np .doc-empty .muted {
+  font-size: 12.5px;
+}
+
+@media (max-width: 980px) {
+  .np .doc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .np .doc-card {
+    padding: 16px;
+  }
+
+  .np .doc-drop {
+    padding: 24px 14px;
+  }
+
+  .np .doc-source {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .np .doc-source .btn {
+    width: 100%;
+  }
+
+  .np .doc-row {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+  }
+
+  .np .doc-row .chip {
+    display: none;
+  }
+}

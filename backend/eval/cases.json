@@ -1,0 +1,486 @@
+{
+  "version": "1.0",
+  "description": "Fictional evaluation set for the candidate matching agent. Every name, company and resume is invented. Each case lists the expected top candidate and the expected matched/missing skills per candidate.",
+  "cases": [
+    {
+      "case_id": "case-01-senior-backend",
+      "job": {
+        "title": "Senior Backend Engineer",
+        "description": "Build and operate Python services that handle high-volume data processing. Own API design, database schema and deployment automation.",
+        "required_skills": ["Python", "FastAPI", "PostgreSQL", "Docker"],
+        "experience_required": 5
+      },
+      "candidates": [
+        {
+          "name": "Ravi Deshmukh",
+          "resume_text": "Ravi Deshmukh\nSenior Software Engineer, Meridian Systems (fictional)\n7 years building backend services in Python. Led the migration of an order-processing platform to FastAPI with async request handling and OpenAPI documentation. Designed PostgreSQL schemas for 40 million rows, wrote query tuning and partitioning. Containerized all services with Docker Compose and managed staging deploys. Previously built a billing service in Django and mentored four junior engineers.\nSkills: Python, FastAPI, PostgreSQL, Docker, Django",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Python", "FastAPI", "PostgreSQL", "Docker"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Lena Fischer",
+          "resume_text": "Lena Fischer\nBackend Developer, Bluepeak Software (fictional)\n3 years of experience. Wrote REST endpoints for an inventory tool using FastAPI. Comfortable with Python scripting and data pipelines. Used SQLite in production; has read documentation on PostgreSQL performance but has not administered it. No containerization experience yet; deployments were handled by the platform team.\nSkills: Python, FastAPI, SQLite",
+          "expected_rank": 2,
+          "expected_matched_skills": ["Python", "FastAPI"],
+          "expected_missing_skills": ["PostgreSQL", "Docker"]
+        },
+        {
+          "name": "Tomasz Zielinski",
+          "resume_text": "Tomasz Zielinski\nGraphic Designer, Studio Kolor (fictional)\n6 years designing marketing material. Builds landing pages in Webflow. Some exposure to HTML and CSS through email templates. Completed a short evening class on Python basics last year.\nSkills: Figma, Webflow, HTML, CSS",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Python", "FastAPI", "PostgreSQL", "Docker"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-02-frontend",
+      "job": {
+        "title": "Frontend Engineer",
+        "description": "Own the customer-facing single page application. Implement accessible component libraries and keep the bundle small.",
+        "required_skills": ["React", "TypeScript", "CSS"],
+        "experience_required": 3
+      },
+      "candidates": [
+        {
+          "name": "Meera Iyer",
+          "resume_text": "Meera Iyer\nFrontend Engineer, Coral Frameworks (fictional)\n4 years building product interfaces. Maintains a React component library used by three internal teams. Wrote all new modules in TypeScript with strict compiler settings and discriminated unions. Rebuilt the design system styles in CSS custom properties and cut bundle size by 35 percent. Runs accessibility audits before every release.\nSkills: React, TypeScript, CSS, Vite",
+          "expected_rank": 1,
+          "expected_matched_skills": ["React", "TypeScript", "CSS"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Jonas Weber",
+          "resume_text": "Jonas Weber\nWeb Developer, Freelance (fictional)\n2 years building small business websites with WordPress and jQuery. Recently finished a React online course and rebuilt his portfolio in React. No professional TypeScript experience; uses plain JavaScript. Styles pages with utility classes and prebuilt themes.\nSkills: JavaScript, React (coursework), WordPress",
+          "expected_rank": 2,
+          "expected_matched_skills": ["React"],
+          "expected_missing_skills": ["TypeScript", "CSS"]
+        },
+        {
+          "name": "Arun Pillai",
+          "resume_text": "Arun Pillai\nQA Tester, Vanta Labs (fictional)\n5 years in manual and automated testing. Heard about React and TypeScript in team standups and keeps a bookmarks folder of frontend articles. Wrote test plans for web applications and understands the component model conceptually.\nSkills: Selenium, Test Planning, JIRA",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["React", "TypeScript", "CSS"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-03-data-analyst",
+      "job": {
+        "title": "Data Analyst",
+        "description": "Turn product and revenue data into clear dashboards and weekly insights for the leadership team.",
+        "required_skills": ["SQL", "Python", "Tableau"],
+        "experience_required": 2
+      },
+      "candidates": [
+        {
+          "name": "Sofia Marino",
+          "resume_text": "Sofia Marino\nData Analyst, Northgate Retail Group (fictional)\n3 years analyzing sales data. Writes advanced SQL daily: window functions, CTEs and query optimization against a Snowflake warehouse. Automates weekly reporting in Python with pandas. Built and maintains 12 Tableau dashboards used by the executive team, including drill-down views for regional performance.\nSkills: SQL, Python, Tableau, pandas",
+          "expected_rank": 1,
+          "expected_matched_skills": ["SQL", "Python", "Tableau"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Derek Osei",
+          "resume_text": "Derek Osei\nBusiness Operations Associate, Harvest Mart (fictional)\n1 year compiling monthly reports in Excel with pivot tables and VLOOKUP. Took an introductory SQL course on a learning platform and can write simple SELECT queries. Watched a Tableau tutorial series but has not published a dashboard.\nSkills: Excel, basic SQL, PowerPoint",
+          "expected_rank": 2,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["SQL", "Python", "Tableau"]
+        },
+        {
+          "name": "Hana Kobayashi",
+          "resume_text": "Hana Kobayashi\nFinancial Auditor, Ledger & Co (fictional)\n4 years auditing financial statements. Uses Python scripts to reconcile large ledgers and is confident with pandas. No experience with Tableau; visualizes findings in Excel charts. Queries data in an audit management tool with a proprietary filter language, not SQL.\nSkills: Python, pandas, Excel",
+          "expected_rank": 2,
+          "expected_matched_skills": ["Python"],
+          "expected_missing_skills": ["SQL", "Tableau"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-04-ml-engineer",
+      "job": {
+        "title": "Machine Learning Engineer",
+        "description": "Train, evaluate and deploy recommendation models. Own the training pipeline and monitoring for model drift.",
+        "required_skills": ["Python", "PyTorch", "MLOps"],
+        "experience_required": 4
+      },
+      "candidates": [
+        {
+          "name": "Vikram Shah",
+          "resume_text": "Vikram Shah\nMachine Learning Engineer, Finch Analytics (fictional)\n5 years shipping models to production. Trains ranking and embedding models in PyTorch, with mixed-precision training on multi-GPU nodes. Built the MLOps stack: experiment tracking, CI for model tests, shadow deployment and drift monitoring dashboards. Previously deployed a collaborative filtering recommender serving 2 million users.\nSkills: Python, PyTorch, MLOps, recommendation systems",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Python", "PyTorch", "MLOps"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Grace Njeri",
+          "resume_text": "Grace Njeri\nData Scientist, Twiga Health (fictional)\n2 years building predictive models for patient risk. Prototypes in Python with scikit-learn and pandas. Has read the PyTorch documentation and completed one notebook tutorial on transfer learning, but all production models were scikit-learn. Deployment is handled by the data engineering team; knows the term MLOps from conference talks.\nSkills: Python, scikit-learn, pandas",
+          "expected_rank": 2,
+          "expected_matched_skills": ["Python"],
+          "expected_missing_skills": ["PyTorch", "MLOps"]
+        },
+        {
+          "name": "Peter Oswald",
+          "resume_text": "Peter Oswald\nSystems Administrator, Ridgeway Insurance (fictional)\n8 years managing Windows servers and backups. Attended a two-day PyTorch workshop at a local meetup and enjoyed it. No professional experience training models or with machine learning tooling.\nSkills: Windows Server, Backup administration",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Python", "PyTorch", "MLOps"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-05-devops",
+      "job": {
+        "title": "DevOps Engineer",
+        "description": "Automate infrastructure on AWS with Terraform and Kubernetes. Own CI/CD pipelines and on-call reliability.",
+        "required_skills": ["Kubernetes", "Terraform", "AWS"],
+        "experience_required": 4
+      },
+      "candidates": [
+        {
+          "name": "Ingrid Solberg",
+          "resume_text": "Ingrid Solberg\nDevOps Engineer, Polar Peak Software (fictional)\n6 years running cloud infrastructure. Operates three production Kubernetes clusters on AWS EKS, wrote the Helm charts and network policies. Manages all infrastructure as code in Terraform with remote state and drift detection. Built GitHub Actions pipelines and runbooks, participates in the on-call rotation.\nSkills: Kubernetes, Terraform, AWS, Helm",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Kubernetes", "Terraform", "AWS"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Marcus Bell",
+          "resume_text": "Marcus Bell\nSystem Engineer, Cedarpoint Hosting (fictional)\n4 years managing Linux servers and Jenkins. Follows the Kubernetes and Terraform subreddits and runs a two-node Kubernetes cluster at home on spare hardware. Professional work is mostly virtual machines and shell scripts; no cloud platform experience at work.\nSkills: Linux, Jenkins, Bash",
+          "expected_rank": 2,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Kubernetes", "Terraform", "AWS"]
+        },
+        {
+          "name": "Yuki Tanaka",
+          "resume_text": "Yuki Tanaka\nSite Reliability Engineer, Tsunami Media (fictional)\n5 years on reliability and incident response. Runs workloads on AWS EC2 and S3 with Terraform-managed infrastructure, and introduced error budgets for the on-call process. Migrated a legacy deployment system to containers orchestrated with Kubernetes and monitors it with Grafana.\nSkills: AWS, Terraform, Kubernetes, Grafana",
+          "expected_rank": 1,
+          "expected_matched_skills": ["AWS", "Terraform", "Kubernetes"],
+          "expected_missing_skills": []
+        }
+      ]
+    },
+    {
+      "case_id": "case-06-product-designer",
+      "job": {
+        "title": "Product Designer",
+        "description": "Design end-to-end product flows in Figma, run usability tests and hand off polished prototypes to engineers.",
+        "required_skills": ["Figma", "Usability testing", "Prototyping"],
+        "experience_required": 3
+      },
+      "candidates": [
+        {
+          "name": "Amara Diallo",
+          "resume_text": "Amara Diallo\nProduct Designer, Lantern App Studio (fictional)\n5 years designing mobile and web products. Maintains the Figma component library and design tokens for a fintech app. Plans and runs usability testing rounds every sprint with moderated sessions and synthesizes findings. Builds interactive prototypes with realistic data states for engineer handoff.\nSkills: Figma, Usability testing, Prototyping, Design systems",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Figma", "Usability testing", "Prototyping"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Ben Carter",
+          "resume_text": "Ben Carter\nMarketing Designer, Brightpost (fictional)\n3 years designing email campaigns and social assets. Uses Figma daily for static layouts. Has never run a usability session or built interactive prototypes; hands static images to developers. Interested in moving into product design.\nSkills: Figma, Adobe Photoshop, Email design",
+          "expected_rank": 2,
+          "expected_matched_skills": ["Figma"],
+          "expected_missing_skills": ["Usability testing", "Prototyping"]
+        },
+        {
+          "name": "Chloe Martin",
+          "resume_text": "Chloe Martin\nInterior Designer, Atelier Nord (fictional)\n7 years designing residential interiors. Creates 3D renderings and mood boards. Started watching Figma tutorial videos after hearing about a career switch. Reads articles about usability testing.\nSkills: 3D rendering, AutoCAD",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Figma", "Usability testing", "Prototyping"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-07-qa-automation",
+      "job": {
+        "title": "QA Automation Engineer",
+        "description": "Build automated regression suites for a web platform and integrate them into the CI pipeline.",
+        "required_skills": ["Selenium", "Python", "CI/CD"],
+        "experience_required": 3
+      },
+      "candidates": [
+        {
+          "name": "Nadia Rahman",
+          "resume_text": "Nadia Rahman\nQA Automation Engineer, Lighthouse Commerce (fictional)\n4 years in quality engineering. Owns the Selenium WebDriver regression suite of 900 tests written in Python with pytest. Integrated the suite into the CI/CD pipeline with nightly runs and failure triage dashboards. Reduced manual regression effort by 80 percent.\nSkills: Selenium, Python, CI/CD, pytest",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Selenium", "Python", "CI/CD"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Oleg Petrov",
+          "resume_text": "Oleg Petrov\nManual QA Tester, Gridline Games (fictional)\n6 years testing mobile games, writing test cases and bug reports. Recorded a few UI checks with Selenium IDE recordings but never wrote WebDriver code. Uses Python only for simple log parsing scripts copied from colleagues. Knows what CI/CD stands for from process documentation.\nSkills: Manual testing, Test case design",
+          "expected_rank": 2,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Selenium", "Python", "CI/CD"]
+        },
+        {
+          "name": "Fatima Al-Sayed",
+          "resume_text": "Fatima Al-Sayed\nSoftware Engineer, Beacon Payments (fictional)\n3 years writing backend services in Python and helping the QA guild automate smoke tests with Selenium. Set up the team's CI/CD pipeline in GitLab with automated test stages. Moving toward a dedicated quality engineering role.\nSkills: Python, Selenium, CI/CD, GitLab",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Python", "Selenium", "CI/CD"],
+          "expected_missing_skills": []
+        }
+      ]
+    },
+    {
+      "case_id": "case-08-mobile",
+      "job": {
+        "title": "Mobile Engineer",
+        "description": "Develop and maintain our Flutter application with Firebase backend services for 100k monthly users.",
+        "required_skills": ["Flutter", "Firebase", "Dart"],
+        "experience_required": 2
+      },
+      "candidates": [
+        {
+          "name": "Carlos Mendes",
+          "resume_text": "Carlos Mendes\nMobile Engineer, Pampas Apps (fictional)\n4 years building cross-platform apps. Ships a Flutter fitness app with 100k installs, written in Dart with a clean architecture layering. Uses Firebase Auth, Firestore and Cloud Functions for the backend, plus Crashlytics for monitoring. Published six apps to the stores.\nSkills: Flutter, Dart, Firebase",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Flutter", "Firebase", "Dart"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Aisha Bello",
+          "resume_text": "Aisha Bello\nAndroid Developer, Kano Logistics (fictional)\n3 years building native Android apps in Kotlin. Completed a Flutter/Dart course and rebuilt a personal expense tracker in Flutter. No Firebase experience; backends were REST APIs in Kotlin. Eager to move to cross-platform development.\nSkills: Kotlin, Android SDK, Flutter (coursework), Dart (coursework)",
+          "expected_rank": 2,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Flutter", "Firebase", "Dart"]
+        },
+        {
+          "name": "Robert Klein",
+          "resume_text": "Robert Klein\nProduct Manager, Venture Apps (fictional)\n5 years managing mobile product roadmaps. Wrote user stories for a Flutter rebuild and sat in Firebase console demos with engineers. Personally manages no code and has not shipped an app.\nSkills: Roadmapping, User stories",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Flutter", "Firebase", "Dart"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-09-data-engineer",
+      "job": {
+        "title": "Data Engineer",
+        "description": "Build batch and streaming pipelines that move event data into the warehouse reliably every hour.",
+        "required_skills": ["Apache Spark", "Airflow", "SQL"],
+        "experience_required": 4
+      },
+      "candidates": [
+        {
+          "name": "Priya Venkatesan",
+          "resume_text": "Priya Venkatesan\nData Engineer, Rivermark Energy (fictional)\n6 years building data pipelines. Wrote hourly batch jobs in Apache Spark on EMR processing 2 TB per day. Authored 60 Airflow DAGs with sensor tasks, retries and SLAs. Deep SQL tuning experience on Redshift, wrote the dimensional models for the analytics warehouse.\nSkills: Apache Spark, Airflow, SQL, Redshift",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Apache Spark", "Airflow", "SQL"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Daniel Kim",
+          "resume_text": "Daniel Kim\nAnalytics Engineer, Metro Health (fictional)\n2 years writing dbt models and SQL transformations for the analytics warehouse. Scheduled with dbt Cloud, not Airflow. No Apache Spark experience; datasets fit in Postgres. Studied Spark concepts for an internal architecture review.\nSkills: SQL, dbt, Postgres",
+          "expected_rank": 2,
+          "expected_matched_skills": ["SQL"],
+          "expected_missing_skills": ["Apache Spark", "Airflow"]
+        },
+        {
+          "name": "Sven Larsen",
+          "resume_text": "Sven Larsen\nBI Consultant, Fjord Insights (fictional)\n5 years delivering BI reports. Attended an Apache Spark summit and can explain RDDs and DataFrames in conversation. Mentions Airflow and SQL in every proposal deck as delivered capabilities, though pipelines were built by client teams.\nSkills: Power BI, Client consulting",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Apache Spark", "Airflow", "SQL"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-10-account-executive",
+      "job": {
+        "title": "Account Executive - SaaS",
+        "description": "Own the full sales cycle for mid-market customers: prospecting, demos, negotiation and closing.",
+        "required_skills": ["CRM", "Lead generation", "Negotiation"],
+        "experience_required": 3
+      },
+      "candidates": [
+        {
+          "name": "Isabelle Fontaine",
+          "resume_text": "Isabelle Fontaine\nAccount Executive, Cloudoran (fictional)\n5 years in SaaS sales. Managed the full cycle in Salesforce CRM from prospecting to close, with 118 percent quota attainment last year. Ran outbound lead generation with a 22 percent meeting-book rate. Led commercial negotiation on six-figure renewals including legal redlines.\nSkills: CRM, Lead generation, Negotiation, Salesforce",
+          "expected_rank": 1,
+          "expected_matched_skills": ["CRM", "Lead generation", "Negotiation"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Tom Becker",
+          "resume_text": "Tom Becker\nSales Development Rep, Ironvale Tools (fictional)\n2 years doing outbound prospecting and booking demos for account executives. Logs activity in HubSpot CRM daily. Has shadowed negotiations but never led one. Promoted twice within the SDR team.\nSkills: CRM, Lead generation, Cold calling",
+          "expected_rank": 2,
+          "expected_matched_skills": ["CRM", "Lead generation"],
+          "expected_missing_skills": ["Negotiation"]
+        },
+        {
+          "name": "Renata Silva",
+          "resume_text": "Renata Silva\nStore Manager, Vale Supermarkets (fictional)\n8 years running a retail store: scheduling, inventory and customer complaints. Negotiated with local suppliers informally. Attended a CRM vendor webinar once. No B2B sales experience.\nSkills: Retail operations, Team scheduling",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["CRM", "Lead generation", "Negotiation"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-11-hr-generalist",
+      "job": {
+        "title": "HR Generalist",
+        "description": "Run onboarding, employee relations and HRIS administration for a 200-person office.",
+        "required_skills": ["Onboarding", "HRIS", "Employee relations"],
+        "experience_required": 3
+      },
+      "candidates": [
+        {
+          "name": "Anita Kowalski",
+          "resume_text": "Anita Kowalski\nHR Generalist, Ferrotek Manufacturing (fictional)\n4 years in human resources. Owns the end-to-end onboarding program for 30 hires per month, including buddy pairing and 90-day reviews. Administers the Workday HRIS: position management, workflows and reporting. Handles employee relations cases from intake through resolution with the legal team.\nSkills: Onboarding, HRIS, Employee relations, Workday",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Onboarding", "HRIS", "Employee relations"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Joshua Adeyemi",
+          "resume_text": "Joshua Adeyemi\nRecruiting Coordinator, Storyboard Studios (fictional)\n2 years coordinating interviews and scheduling. Helps with new-hire paperwork and runs orientation day twice a month. Uses the HRIS for time-off requests only; the benefits team administers the rest. No employee relations case experience.\nSkills: Onboarding, Interview scheduling",
+          "expected_rank": 2,
+          "expected_matched_skills": ["Onboarding"],
+          "expected_missing_skills": ["HRIS", "Employee relations"]
+        },
+        {
+          "name": "Karen Whitfield",
+          "resume_text": "Karen Whitfield\nOffice Manager, Slate & Pine (fictional)\n6 years managing office logistics, supplies and events. Sat through an HRIS vendor demo during a procurement project. Drafted a few policy emails for the HR director. Interested in transitioning into human resources.\nSkills: Office management, Vendor coordination",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Onboarding", "HRIS", "Employee relations"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-12-fullstack",
+      "job": {
+        "title": "Full-Stack Developer",
+        "description": "Build features across a Node.js API and a React dashboard, backed by MongoDB.",
+        "required_skills": ["Node.js", "React", "MongoDB"],
+        "experience_required": 3
+      },
+      "candidates": [
+        {
+          "name": "Kwame Mensah",
+          "resume_text": "Kwame Mensah\nFull-Stack Developer, Savanna Software (fictional)\n4 years shipping product features end to end. Builds REST and GraphQL APIs in Node.js with Express, including auth and rate limiting. Maintains the React dashboard with hooks and context, wrote the design for the realtime notifications feed. Models collections and aggregation pipelines in MongoDB Atlas.\nSkills: Node.js, React, MongoDB, Express",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Node.js", "React", "MongoDB"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Ella Novak",
+          "resume_text": "Ella Novak\nFrontend Developer, Prism Retail (fictional)\n3 years building React storefronts and internal admin panels. Consumes APIs built by the backend team in Node.js and once pair-programmed on an Express route. Databases she used were managed by others; followed a MongoDB university course online.\nSkills: React, JavaScript",
+          "expected_rank": 2,
+          "expected_matched_skills": ["React"],
+          "expected_missing_skills": ["Node.js", "MongoDB"]
+        },
+        {
+          "name": "George Antoniou",
+          "resume_text": "George Antoniou\nIT Support Specialist, Helios Logistics (fictional)\n7 years in desktop support and networking. Watched a Node.js crash course over a weekend and lists React, Node.js and MongoDB on his CV under technologies he is exploring. Has never built a web application.\nSkills: Network administration, Windows support",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Node.js", "React", "MongoDB"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-13-business-analyst",
+      "job": {
+        "title": "Business Analyst",
+        "description": "Translate stakeholder needs into data-backed requirements and process documentation for the platform team.",
+        "required_skills": ["SQL", "Stakeholder management", "Process mapping"],
+        "experience_required": 3
+      },
+      "candidates": [
+        {
+          "name": "Chiara Rossi",
+          "resume_text": "Chiara Rossi\nBusiness Analyst, Vela Insurance (fictional)\n5 years as a business analyst. Facilitates stakeholder management across claims, finance and engineering, running weekly steering sessions. Writes SQL against the claims warehouse to validate requirements with real data. Documents current and future state with BPMN process mapping and maintains the requirement backlog.\nSkills: SQL, Stakeholder management, Process mapping, BPMN",
+          "expected_rank": 1,
+          "expected_matched_skills": ["SQL", "Stakeholder management", "Process mapping"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Victor Hugo Alves",
+          "resume_text": "Victor Hugo Alves\nCustomer Success Manager, Atlasdesk (fictional)\n3 years managing enterprise accounts and gathering product feedback. Comfortable presenting to stakeholders and running workshops. Writes queries in the support tool's filter language; took an intro SQL course last year. No formal process mapping experience.\nSkills: Account management, Workshops",
+          "expected_rank": 2,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["SQL", "Stakeholder management", "Process mapping"]
+        },
+        {
+          "name": "Mia Andersen",
+          "resume_text": "Mia Andersen\nProject Coordinator, Nordwind Construction (fictional)\n4 years coordinating construction projects. Maintains schedules and draws process flow diagrams in Visio for site logistics. Learned basic SQL through a community college class. Regularly coordinates between site managers and office stakeholders.\nSkills: Process mapping, Scheduling",
+          "expected_rank": 2,
+          "expected_matched_skills": ["Process mapping"],
+          "expected_missing_skills": ["SQL", "Stakeholder management"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-14-security-engineer",
+      "job": {
+        "title": "Security Engineer",
+        "description": "Run offensive security reviews of our web platform, automate findings and drive remediation.",
+        "required_skills": ["Penetration testing", "OWASP", "Python"],
+        "experience_required": 5
+      },
+      "candidates": [
+        {
+          "name": "Elena Petrova",
+          "resume_text": "Elena Petrova\nSecurity Engineer, Bastion Cloud (fictional)\n6 years in application security. Performs penetration testing on web platforms: authentication flows, business logic abuse and API abuse. Built internal tooling in Python that re-tests OWASP Top 10 findings against every release. Ran the bug triage program and drove fixes with engineering leads.\nSkills: Penetration testing, OWASP, Python, Burp Suite",
+          "expected_rank": 1,
+          "expected_matched_skills": ["Penetration testing", "OWASP", "Python"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Adam Silverman",
+          "resume_text": "Adam Silverman\nCompliance Analyst, Quillon Bank (fictional)\n4 years running SOC 2 and PCI compliance audits. Interviewed engineers about OWASP controls and mapped evidence for auditors. Wrote Python scripts to reconcile control inventories. Has never performed penetration testing herself; vendors did.\nSkills: Python, Compliance auditing",
+          "expected_rank": 2,
+          "expected_matched_skills": ["Python"],
+          "expected_missing_skills": ["Penetration testing", "OWASP"]
+        },
+        {
+          "name": "Bruno Costa",
+          "resume_text": "Bruno Costa\nHelpdesk Technician, Marlin Retail (fictional)\n5 years on internal helpdesk. Completed a beginner penetration testing course on a MOOC platform and read the OWASP Top 10 list. Lists Python basics on his CV from a two-week bootcamp. No professional security work.\nSkills: Helpdesk, Ticketing systems",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["Penetration testing", "OWASP", "Python"]
+        }
+      ]
+    },
+    {
+      "case_id": "case-15-technical-writer",
+      "job": {
+        "title": "Technical Writer",
+        "description": "Write and maintain developer-facing API documentation, tutorials and release notes.",
+        "required_skills": ["API documentation", "Markdown", "Developer tools"],
+        "experience_required": 2
+      },
+      "candidates": [
+        {
+          "name": "Julia Sørensen",
+          "resume_text": "Julia Sørensen\nTechnical Writer, Nordcloud Docs (fictional)\n4 years writing developer documentation. Owns the API documentation set for a payments platform, generated from OpenAPI specs with custom guides. Writes everything in Markdown, maintains docs-as-code in Git with reviews. Comfortable with developer tools: Postman, curl, reading stack traces and sample code.\nSkills: API documentation, Markdown, Developer tools, OpenAPI",
+          "expected_rank": 1,
+          "expected_matched_skills": ["API documentation", "Markdown", "Developer tools"],
+          "expected_missing_skills": []
+        },
+        {
+          "name": "Michael Osei",
+          "resume_text": "Michael Osei\nCustomer Support Lead, Brightforms (fictional)\n3 years writing help center articles in the support CMS. Wrote onboarding guides in Word; the team's drafts live in Markdown files on shared drive. Uses the admin developer tools dashboard to look up account states. Has not documented a public API.\nSkills: Help center writing, Markdown (basic)",
+          "expected_rank": 2,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["API documentation", "Markdown", "Developer tools"]
+        },
+        {
+          "name": "Sarah Whitmore",
+          "resume_text": "Sarah Whitmore\nCopywriter, Kaleido Agency (fictional)\n6 years writing marketing copy and blog posts. Attended a webinar about API documentation trends and mentions Markdown, API documentation and developer tools in her CV under familiar tools from a self-study plan. Published work is marketing content, not technical documentation.\nSkills: Copywriting, SEO",
+          "expected_rank": 3,
+          "expected_matched_skills": [],
+          "expected_missing_skills": ["API documentation", "Markdown", "Developer tools"]
+        }
+      ]
+    }
+  ]
+}
