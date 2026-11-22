@@ -37,10 +37,13 @@ from app.services.job_search_service import (
     clarification_question,
     extract_preferences,
     fallback_role,
+    format_company_answer,
     format_job_answer,
+    is_company_hiring_query,
     is_job_search,
     job_sources,
     missing_essential,
+    search_hiring_companies,
     search_jobs,
 )
 
@@ -367,6 +370,10 @@ async def _run_job_search(
         if key in preference_fields and value is not None
     }
     base = JobPreferences(**clean_stored)
+
+    if is_company_hiring_query(content):
+        return await _run_company_search(content, base, history)
+
     prefs = extract_preferences(content, base)
 
     # If a pending job-search question was answered, apply the answer to the
@@ -434,6 +441,56 @@ async def _run_job_search(
     return PipelineResult(
         query=content,
         answer=answer,
+        has_evidence=bool(listings),
+        sources=sources,
+        evidence_text="",
+    )
+
+
+async def _run_company_search(
+    content: str,
+    prefs: JobPreferences,
+    history: list[dict[str, Any]] | None = None,
+) -> Any:
+    from app.rag.pipeline import PipelineResult
+
+    prefs = extract_preferences(content, prefs)
+
+    if not prefs.role:
+        missing = missing_essential(prefs)
+        if missing == "role":
+            return PipelineResult(
+                query=content,
+                answer=clarification_question("role", prefs),
+                has_evidence=False,
+                sources=[
+                    {
+                        "kind": "job_search_prompt",
+                        "missing": "role",
+                        "preferences": asdict(prefs),
+                    }
+                ],
+                evidence_text="",
+            )
+    if not prefs.location and not prefs.remote:
+        prefs.location = "India"
+
+    try:
+        listings = await search_hiring_companies(prefs)
+    except TavilyError as exc:
+        return PipelineResult(
+            query=content,
+            answer=str(exc),
+            has_evidence=False,
+            sources=[],
+            evidence_text="",
+        )
+
+    preferences_source = {"kind": "job_preferences", **asdict(prefs)}
+    sources = job_sources(listings) + [preferences_source] if listings else []
+    return PipelineResult(
+        query=content,
+        answer=format_company_answer(listings, prefs),
         has_evidence=bool(listings),
         sources=sources,
         evidence_text="",

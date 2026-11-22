@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import re
@@ -428,6 +429,22 @@ def _build_tavily_queries(prefs: JobPreferences) -> list[tuple[str, list[str], s
 
 def is_job_search(text: str) -> bool:
     return bool(JOB_SEARCH_PATTERN.search((text or "").strip()))
+
+
+def is_company_hiring_query(text: str) -> bool:
+    """Detect 'which companies are hiring' style questions."""
+    cleaned = (text or "").strip()
+    if not cleaned:
+        return False
+    return bool(
+        re.search(
+            r"\b(?:which|what|list|show|find|who)\b[\s\S]{0,40}?\bcompanies\b[\s\S]{0,40}?\bhiring\b"
+            r"|\bcompanies\b[\s\S]{0,20}?\bhiring\b"
+            r"|\bwho\s+is\s+hiring\b",
+            cleaned,
+            re.IGNORECASE,
+        )
+    )
 
 
 def _merge_list(current: list[str], added: list[str]) -> list[str]:
@@ -927,6 +944,151 @@ def format_job_answer(listings: list[dict[str, Any]], prefs: JobPreferences) -> 
         if listing.get("url"):
             lines.append(f"  Apply: {listing['url']}")
     return "\n".join(lines)
+
+
+def format_company_answer(
+    listings: list[dict[str, Any]], prefs: JobPreferences
+) -> str:
+    if not listings:
+        return (
+            "I could not find company hiring information for "
+            f"{prefs.role or 'that role'} in {prefs.location or 'the requested location'}. "
+            "Try a broader role or location."
+        )
+    lines = [
+        f"Companies that may be hiring for {prefs.role or 'your role'} "
+        "(general web results, not verified vacancies):"
+    ]
+    for listing in listings[:TAVILY_MAX_RESULTS]:
+        name = listing.get("company") or "Company not specified"
+        title = listing.get("title") or prefs.role or "Hiring"
+        url = listing.get("url")
+        if url:
+            lines.append(f"- {name} — {title} — {url}")
+        else:
+            lines.append(f"- {name} — {title}")
+    return "\n".join(lines)
+
+
+async def _extract_company_hiring(item: dict[str, Any], llm_client) -> list[dict[str, Any]]:
+    """Extract hiring companies from one raw search result."""
+    if llm_client is None:
+        return []
+    try:
+        from app.schemas.job_search import CompanyHiringExtraction
+
+        title = _clean_text(item.get("title"))
+        url = _clean_text(item.get("url"))
+        content = _clean_text(item.get("content"))[:1500]
+        settings = getattr(llm_client, "settings", None)
+        use_responses = bool(getattr(settings, "use_responses", False))
+        extracted = await llm_client.complete_structured(
+            CompanyHiringExtraction,
+            "Extract companies that appear to be hiring for the requested role. "
+            "Use only the supplied result. Return JSON only.",
+            f"Title: {title}\nURL: {url}\nContent: {content}",
+            max_tokens=500,
+            use_responses=use_responses,
+        )
+        result = []
+        for company in extracted.companies:
+            if not company.company:
+                continue
+            result.append(
+                {
+                    "kind": "company",
+                    "title": _clean_text(company.role) or None,
+                    "company": _clean_text(company.company),
+                    "location": None,
+                    "experience": None,
+                    "employment_type": None,
+                    "salary": None,
+                    "description": None,
+                    "skills": [],
+                    "url": _clean_text(company.career_page_url) or url or None,
+                    "source": "tavily",
+                    "search_date": time.strftime("%Y-%m-%d"),
+                    "score": 0.0,
+                }
+            )
+        return result
+    except Exception:
+        return []
+
+
+async def search_hiring_companies(prefs: JobPreferences) -> list[dict[str, Any]]:
+    """General web search for companies hiring; no single-posting filter."""
+    api_key = os.getenv("TAVILY_API_KEY", "").strip()
+    if not api_key:
+        raise TavilyError("Job search is not configured. Please add the Tavily API key on the server.")
+
+    role = prefs.role or "jobs"
+    location = prefs.location or ("Remote" if prefs.remote else "India")
+    query = f"{role} companies hiring careers {location}"
+    try:
+        async with httpx.AsyncClient(timeout=TAVILY_TIMEOUT_SECONDS) as client:
+            payload: dict[str, Any] = {
+                "api_key": api_key,
+                "query": query,
+                "search_depth": "advanced",
+                "max_results": 10,
+                "include_answer": False,
+                "include_raw_content": False,
+                "exclude_domains": list(_TAVILY_EXCLUDE_DOMAINS),
+            }
+            time_range = os.getenv("TAVILY_TIME_RANGE", "").strip()
+            if time_range:
+                payload["time_range"] = time_range
+            response = await client.post(TAVILY_API_URL, json=payload)
+            response.raise_for_status()
+            data = response.json()
+    except httpx.HTTPStatusError as exc:
+        if exc.response.status_code in (401, 403):
+            raise TavilyError("Job search is not configured correctly. Please check the Tavily API key on the server.") from exc
+        if exc.response.status_code == 429:
+            raise TavilyError("The job search service is rate limited. Please try again shortly.") from exc
+        raise TavilyError("The job search service could not complete the request. Please try again.") from exc
+    except httpx.HTTPError as exc:
+        raise TavilyError("The job search service could not be reached. Please try again shortly.") from exc
+    except ValueError as exc:
+        raise TavilyError("The job search service returned an unreadable response.") from exc
+
+    llm_client = _tavily_llm_client() if os.getenv("JOB_SEARCH_LLM_VALIDATION", "true").strip().casefold() in {
+        "1", "true", "yes"
+    } else None
+    listings: list[dict[str, Any]] = []
+    for item in data.get("results") or []:
+        if not isinstance(item, dict):
+            continue
+        extracted = await _extract_company_hiring(item, llm_client)
+        listings.extend(extracted)
+    if not listings:
+        # Preserve a minimal result from the raw result without inventing fields.
+        for item in data.get("results") or []:
+            if not isinstance(item, dict):
+                continue
+            url = _clean_text(item.get("url"))
+            if not url.startswith(("http://", "https://")):
+                continue
+            listings.append(
+                {
+                    "kind": "company",
+                    "title": _clean_text(item.get("title")) or prefs.role or "Hiring",
+                    "company": None,
+                    "location": prefs.location or "India",
+                    "experience": prefs.experience,
+                    "employment_type": None,
+                    "salary": None,
+                    "description": None,
+                    "skills": [],
+                    "url": url,
+                    "source": "tavily",
+                    "search_date": time.strftime("%Y-%m-%d"),
+                    "score": float(item.get("score") or 0.0),
+                }
+            )
+            break
+    return listings
 
 
 def clear_cache() -> None:

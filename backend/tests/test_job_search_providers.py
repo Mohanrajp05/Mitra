@@ -13,6 +13,7 @@ from app.services.job_search_service import (
     _url_quality,
     free_text_location,
     normalize_location,
+    format_company_answer,
     format_job_answer,
     search_jobs,
 )
@@ -102,6 +103,145 @@ def test_empty_results_answer_offers_suggestions():
     assert "Junior Web Developer" in answer
     assert "broader location" in answer
     assert "which companies are hiring" in answer
+
+
+def test_is_company_hiring_query_detects_phrases():
+    from app.services.job_search_service import is_company_hiring_query
+
+    assert is_company_hiring_query("which companies are hiring for full stack web development?")
+    assert is_company_hiring_query("who is hiring for React developer roles?")
+    assert not is_company_hiring_query("Find React developer jobs in India.")
+
+
+def test_search_hiring_companies_extracts_companies(monkeypatch):
+    js.clear_cache()
+
+    async def fake_tavily(prefs):
+        return [
+            {
+                "kind": "company",
+                "title": "Hiring",
+                "company": "Acme",
+                "location": "Bengaluru",
+                "experience": None,
+                "employment_type": None,
+                "salary": None,
+                "description": None,
+                "skills": [],
+                "url": "https://www.acme.com/careers",
+                "source": "tavily",
+                "search_date": "2026-11-23",
+                "score": 0.9,
+            }
+        ]
+
+    # Monkeypatch LLM extraction at the function level.
+    async def fake_extract(item, client):
+        return [
+            {
+                "kind": "company",
+                "title": "Full Stack Developer",
+                "company": "Acme",
+                "location": "Bengaluru",
+                "experience": None,
+                "employment_type": None,
+                "salary": None,
+                "description": None,
+                "skills": [],
+                "url": "https://www.acme.com/careers",
+                "source": "tavily",
+                "search_date": "2026-11-23",
+                "score": 0.9,
+            }
+        ]
+
+    monkeypatch.setenv("JOB_SEARCH_LLM_VALIDATION", "true")
+    monkeypatch.setattr(js, "_extract_company_hiring", fake_extract)
+
+    class FakeResponse:
+        status_code = 200
+
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"results": [{"title": "Acme Careers", "url": "https://www.acme.com/careers", "content": "Acme is hiring"}]}
+
+    class FakeClient:
+        def __init__(self, **kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        async def post(self, url, json=None):
+            return FakeResponse()
+
+    monkeypatch.setattr(js.httpx, "AsyncClient", FakeClient)
+
+    results = asyncio.run(js.search_hiring_companies(js.JobPreferences(role="Full Stack Developer", location="India")))
+    assert len(results) == 1
+    assert results[0]["company"] == "Acme"
+    assert results[0]["kind"] == "company"
+    assert results[0]["url"] == "https://www.acme.com/careers"
+
+
+def test_format_company_answer_lists_companies():
+    listings = [
+        {"kind": "company", "title": "Full Stack Developer", "company": "Acme", "url": "https://www.acme.com/careers"},
+        {"kind": "company", "title": "Full Stack Developer", "company": "Beta", "url": None},
+    ]
+    answer = js.format_company_answer(listings, JobPreferences(role="Full Stack Developer", location="India"))
+    assert "Acme" in answer
+    assert "https://www.acme.com/careers" in answer
+    assert "Beta" in answer
+
+
+@pytest.mark.asyncio
+async def test_company_hiring_query_returns_companies(monkeypatch):
+    from app.services import chat_service
+
+    captured = {}
+
+    async def fake_company(prefs):
+        captured["prefs"] = prefs
+        return [
+            {
+                "kind": "company",
+                "title": "Full Stack Developer",
+                "company": "Acme",
+                "location": "India",
+                "experience": None,
+                "employment_type": None,
+                "salary": None,
+                "description": None,
+                "skills": [],
+                "url": "https://www.acme.com/careers",
+                "source": "tavily",
+                "search_date": "2026-11-23",
+                "score": 0.9,
+            }
+        ]
+
+    monkeypatch.setattr(chat_service, "search_hiring_companies", fake_company)
+    monkeypatch.setattr(chat_service, "_check_session", lambda *args: None)
+    monkeypatch.setattr(chat_service, "_load_history", lambda *args: [])
+    monkeypatch.setattr(
+        chat_service, "_persist_exchange", lambda *args: {"user_message": {}, "assistant_message": {}}
+    )
+
+    result = await chat_service._run_job_search(
+        "which companies are hiring for full stack web development?",
+        {"role": "Full Stack Developer"},
+        history=[],
+    )
+
+    assert "Acme" in result.answer
+    assert "https://www.acme.com/careers" in result.answer
+    assert captured["prefs"].role == "Full Stack Developer"
 
 
 def test_location_ladder_stops_when_three_postings_found(monkeypatch):
