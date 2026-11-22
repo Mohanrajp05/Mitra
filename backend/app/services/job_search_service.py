@@ -367,6 +367,34 @@ class JobPreferences:
         return bits
 
 
+_TAVILY_DOMAIN_GROUPS = (
+    ("naukri", ["naukri.com"]),
+    ("linkedin", ["linkedin.com"]),
+    ("internshala", ["internshala.com"]),
+    ("foundit", ["foundit.in"]),
+    ("wellfound", ["wellfound.com"]),
+    ("ats", ["greenhouse.io", "lever.co", "ashbyhq.com"]),
+)
+
+
+def _build_tavily_queries(prefs: JobPreferences) -> list[tuple[str, list[str], str]]:
+    """One query per trusted domain group; fresher searches add a junior variant."""
+    role = prefs.role or "jobs"
+    location = prefs.location or ("Remote" if prefs.remote else "India")
+    fresher = "fresher" in (prefs.experience or "").casefold()
+    groups = _TAVILY_DOMAIN_GROUPS
+    if prefs.platform:
+        groups = tuple(group for group in groups if group[0] == prefs.platform) or groups
+
+    queries: list[tuple[str, list[str], str]] = []
+    for index, (label, domains) in enumerate(groups):
+        queries.append((label, domains, f'"{role}" apply {location}'))
+        if fresher:
+            variant_role = f"Junior {role}" if index % 2 == 0 else f"Associate {role}"
+            queries.append((label, domains, f'"{variant_role}" apply {location}'))
+    return queries
+
+
 def is_job_search(text: str) -> bool:
     return bool(JOB_SEARCH_PATTERN.search((text or "").strip()))
 
@@ -707,28 +735,30 @@ async def _search_tavily(
     if not api_key:
         raise TavilyError("Job search is not configured. Please add the Tavily API key on the server.")
 
-    queries = queries if queries is not None else build_queries(prefs)
-    domains = PLATFORM_DOMAINS.get(prefs.platform, [])
+    domain_queries = _build_tavily_queries(prefs)
+    time_range = os.getenv("TAVILY_TIME_RANGE", "").strip()
+    max_llm_validations = int(os.getenv("JOB_SEARCH_MAX_LLM_VALIDATIONS", "40"))
     validate_with_llm = os.getenv("JOB_SEARCH_LLM_VALIDATION", "true").strip().casefold() in {
         "1", "true", "yes"
     }
     llm_client = _tavily_llm_client() if validate_with_llm else None
     listings: list[dict[str, Any]] = []
+    llm_validations = 0
     try:
         async with httpx.AsyncClient(timeout=TAVILY_TIMEOUT_SECONDS) as client:
-            for query in queries:
+            for label, domains, query in domain_queries:
                 payload: dict[str, Any] = {
                     "api_key": api_key,
                     "query": query,
-                    "search_depth": "basic",
-                    "max_results": 5,
+                    "search_depth": "advanced",
+                    "max_results": 10,
                     "include_answer": False,
                     "include_raw_content": False,
                     "exclude_domains": list(_TAVILY_EXCLUDE_DOMAINS),
-                    "time_range": "month",
+                    "include_domains": list(domains),
                 }
-                if domains:
-                    payload["include_domains"] = domains
+                if time_range:
+                    payload["time_range"] = time_range
                 response = await client.post(TAVILY_API_URL, json=payload)
                 response.raise_for_status()
                 data = response.json()
@@ -750,7 +780,10 @@ async def _search_tavily(
                     if not parsed:
                         parse_rejected += 1
                         continue
-                    extraction = await _extract_job_posting(item, llm_client)
+                    extraction = None
+                    if llm_client is not None and llm_validations < max_llm_validations:
+                        llm_validations += 1
+                        extraction = await _extract_job_posting(item, llm_client)
                     if extraction is not None and not extraction.is_single_posting:
                         llm_rejected += 1
                         continue

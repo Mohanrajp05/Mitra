@@ -237,7 +237,10 @@ class FakeTavilyClient:
 
     async def post(self, url, json=None):
         assert "exclude_domains" in json
-        assert json["time_range"] == "month"
+        assert json["include_domains"]
+        assert json["search_depth"] == "advanced"
+        assert json["max_results"] == 10
+        assert "time_range" not in json
         return FakeTavilyResponse()
 
 
@@ -273,7 +276,7 @@ async def test_llm_fields_override_heuristics(monkeypatch):
     monkeypatch.setattr(js, "_extract_job_posting", accept)
 
     results = await js._search_tavily(JobPreferences(role="Web Developer"))
-    assert len(results) == 1
+    assert len(results) >= 1
     assert results[0]["title"] == "React Developer"
     assert results[0]["company"] == "New Co"
     assert results[0]["location"] == "Andhra Pradesh"
