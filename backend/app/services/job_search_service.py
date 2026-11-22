@@ -156,6 +156,51 @@ _NAV_BOILERPLATE = (
 _JOB_CONTENT_MARKERS = ("Job Post Details", "Job Description", "Job details", "About the job")
 
 
+JOB_POSTING_SYSTEM_PROMPT = (
+    "You validate one raw web-search result for a job search. Decide whether it "
+    "describes ONE individual job posting (not a category page, search results "
+    "page, company profile, salary guide or list of vacancies). Extract only "
+    "fields explicitly present in the result; use null when absent. Never invent "
+    "a company, location or application link. Return JSON only."
+)
+
+
+def _tavily_llm_client():
+    """Return the existing LLM client when configured, else None."""
+    try:
+        from app.rag.llm import get_llm_client
+
+        client = get_llm_client()
+        settings = getattr(client, "settings", None)
+        return client if settings and getattr(settings, "configured", False) else None
+    except Exception:
+        return None
+
+
+async def _extract_job_posting(item: dict[str, Any], llm_client) -> Any | None:
+    """Structured validation of a raw search result; None means unavailable."""
+    if llm_client is None:
+        return None
+    try:
+        from app.schemas.job_search import JobPostingExtraction
+
+        title = _clean_text(item.get("title"))
+        url = _clean_text(item.get("url"))
+        content = _clean_text(item.get("content"))[:1200]
+        settings = getattr(llm_client, "settings", None)
+        use_responses = bool(getattr(settings, "use_responses", False))
+        return await llm_client.complete_structured(
+            JobPostingExtraction,
+            JOB_POSTING_SYSTEM_PROMPT,
+            f"Title: {title}\nURL: {url}\nContent: {content}",
+            max_tokens=300,
+            use_responses=use_responses,
+        )
+    except Exception:
+        # Fail open: the URL/field heuristics already ran in _parse_listing.
+        return None
+
+
 def _url_quality(url: str) -> int:
     """-1 = reject (listing/profile page), 1 = prefer, 0 = neutral."""
     lowered = (url or "").casefold()
@@ -661,6 +706,10 @@ async def _search_tavily(
 
     queries = queries if queries is not None else build_queries(prefs)
     domains = PLATFORM_DOMAINS.get(prefs.platform, [])
+    validate_with_llm = os.getenv("JOB_SEARCH_LLM_VALIDATION", "true").strip().casefold() in {
+        "1", "true", "yes"
+    }
+    llm_client = _tavily_llm_client() if validate_with_llm else None
     listings: list[dict[str, Any]] = []
     try:
         async with httpx.AsyncClient(timeout=TAVILY_TIMEOUT_SECONDS) as client:
@@ -684,8 +733,23 @@ async def _search_tavily(
                     if not isinstance(item, dict):
                         continue
                     parsed = _parse_listing(item, prefs)
-                    if parsed:
-                        listings.append(parsed)
+                    if not parsed:
+                        continue
+                    extraction = await _extract_job_posting(item, llm_client)
+                    if extraction is not None:
+                        if not extraction.is_single_posting:
+                            continue
+                        if extraction.title:
+                            parsed["title"] = _clean_text(extraction.title)
+                        if extraction.company:
+                            parsed["company"] = _clean_text(extraction.company)
+                        if extraction.location:
+                            parsed["location"] = normalize_location(extraction.location) or _clean_text(extraction.location)
+                        if extraction.employment_type:
+                            parsed["employment_type"] = _clean_text(extraction.employment_type)
+                        if extraction.apply_url and extraction.apply_url.startswith(("http://", "https://")):
+                            parsed["url"] = extraction.apply_url
+                    listings.append(parsed)
     except httpx.HTTPStatusError as exc:
         if exc.response.status_code in (401, 403):
             raise TavilyError("Job search is not configured correctly. Please check the Tavily API key on the server.") from exc
