@@ -2,8 +2,9 @@ import os
 import re
 import time
 from dataclasses import dataclass, field, replace
+from difflib import get_close_matches
 from typing import Any
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlsplit
 
 import httpx
 
@@ -86,6 +87,111 @@ LOCATION_ALIASES = {
     "bangalore": "Bengaluru",
     "bengaluru": "Bengaluru",
 }
+
+# Canonical Indian locations + common misspellings/aliases.  Fuzzy matching is
+# used for near misses such as "Andra pradesh".
+LOCATION_CANONICAL = {
+    "andra pradesh": "Andhra Pradesh",
+    "andhra pradesh": "Andhra Pradesh",
+    "andhra": "Andhra Pradesh",
+    "bangalore": "Bengaluru",
+    "bengaluru": "Bengaluru",
+    "bangaluru": "Bengaluru",
+    "bengalooru": "Bengaluru",
+    "bombay": "Mumbai",
+    "mumbai": "Mumbai",
+    "calcutta": "Kolkata",
+    "kolkata": "Kolkata",
+    "madras": "Chennai",
+    "chennai": "Chennai",
+    "delhi": "Delhi",
+    "new delhi": "New Delhi",
+    "hyderabad": "Hyderabad",
+    "pune": "Pune",
+    "ahmedabad": "Ahmedabad",
+    "noida": "Noida",
+    "gurgaon": "Gurugram",
+    "gurugram": "Gurugram",
+    "jaipur": "Jaipur",
+    "kochi": "Kochi",
+    "kerala": "Kerala",
+    "karnataka": "Karnataka",
+    "tamil nadu": "Tamil Nadu",
+    "telangana": "Telangana",
+    "maharashtra": "Maharashtra",
+    "gujarat": "Gujarat",
+    "uttar pradesh": "Uttar Pradesh",
+    "west bengal": "West Bengal",
+    "madhya pradesh": "Madhya Pradesh",
+    "india": "India",
+}
+
+
+def normalize_location(value: str | None) -> str | None:
+    """Normalize known place names (including common typos) to canonical form."""
+    cleaned = re.sub(r"\s+", " ", str(value or "").strip()).strip(".,!?:-").strip()
+    if not cleaned:
+        return None
+    key = cleaned.casefold()
+    if key in LOCATION_CANONICAL:
+        return LOCATION_CANONICAL[key]
+    close = get_close_matches(key, LOCATION_CANONICAL.keys(), n=1, cutoff=0.86)
+    if close:
+        return LOCATION_CANONICAL[close[0]]
+    return cleaned
+
+
+BAD_URL_FRAGMENTS = ("/q-", "-jobs.html", "/jobs-in-", "/profile_")
+BAD_HOSTS = ("rocketreach.co", "zoominfo.com")
+GOOD_URL_FRAGMENTS = ("/job/", "/viewjob", "/jobs/view/", "/job-posting/")
+ATS_HOSTS = ("greenhouse.io", "lever.co", "ashbyhq.com", "workday")
+_TAVILY_EXCLUDE_DOMAINS = ("rocketreach.co", "zoominfo.com")
+
+_NAV_BOILERPLATE = (
+    "People also searched",
+    "Resume Resources",
+    "Career Resources",
+    "Employer Resources",
+)
+_JOB_CONTENT_MARKERS = ("Job Post Details", "Job Description", "Job details", "About the job")
+
+
+def _url_quality(url: str) -> int:
+    """-1 = reject (listing/profile page), 1 = prefer, 0 = neutral."""
+    lowered = (url or "").casefold()
+    host = urlsplit(lowered).netloc
+    if any(bad in host for bad in BAD_HOSTS):
+        return -1
+    if any(fragment in lowered for fragment in BAD_URL_FRAGMENTS):
+        return -1
+    if any(good in lowered for good in GOOD_URL_FRAGMENTS):
+        return 1
+    if any(ats in host for ats in ATS_HOSTS):
+        return 1
+    return 0
+
+
+def _strip_navigation_boilerplate(content: str) -> str:
+    """Remove board navigation blocks, keeping real job detail text if present."""
+    text = content or ""
+    positions = [
+        text.casefold().find(marker.casefold())
+        for marker in _NAV_BOILERPLATE
+    ]
+    positions = [pos for pos in positions if pos >= 0]
+    if not positions:
+        return text
+    start = min(positions)
+    tail = text[start:]
+    detail_positions = [
+        tail.casefold().find(marker.casefold())
+        for marker in _JOB_CONTENT_MARKERS
+    ]
+    detail_positions = [pos for pos in detail_positions if pos >= 0]
+    if detail_positions:
+        detail = tail[min(detail_positions):]
+        return re.sub(r"^[#\s]+", "", detail).strip()
+    return text[:start].strip()
 
 _LOCATION_NON_PLACE = {
     "a", "an", "the", "this", "that", "these", "those", "same", "my", "your",
@@ -257,11 +363,11 @@ def free_text_location(value: str) -> str:
             kept.append(part)
         candidate = " ".join(kept).strip(".,")
         if usable(candidate, 5):
-            return LOCATION_ALIASES.get(candidate.casefold(), candidate)
+            return normalize_location(candidate)
 
     words = re.findall(r"[A-Za-z0-9][A-Za-z0-9'&.\-]*", cleaned)
     if len(words) <= 5 and not is_job_search(cleaned) and usable(cleaned, 5):
-        return LOCATION_ALIASES.get(cleaned.casefold(), cleaned)
+        return normalize_location(cleaned)
     return ""
 
 
@@ -308,7 +414,7 @@ def extract_preferences(text: str, current: JobPreferences | None = None) -> Job
         locations = [item for item in found_locations if item not in ("remote", "india")]
         chosen = locations[0] if locations else ("India" if "india" in found_locations else "")
         if chosen:
-            prefs.location = LOCATION_ALIASES.get(chosen, chosen.title())
+            prefs.location = normalize_location(chosen) or chosen.title()
     if not prefs.location:
         # Arbitrary states/districts/cities are valid too; the list above is
         # only a normalization aid, not a restriction.
@@ -388,7 +494,7 @@ def _clean_text(value: Any) -> str:
 
 def _parse_listing(item: dict[str, Any], prefs: JobPreferences) -> dict[str, Any] | None:
     url = _clean_text(item.get("url"))
-    if not url.startswith(("http://", "https://")):
+    if not url.startswith(("http://", "https://")) or _url_quality(url) < 0:
         return None
     title = _clean_text(item.get("title"))
     content = _clean_text(item.get("content"))
@@ -413,45 +519,65 @@ def _parse_listing(item: dict[str, Any], prefs: JobPreferences) -> dict[str, Any
     if company_match:
         company = _clean_text(company_match.group(1))
 
-    location = prefs.location or ("Remote" if prefs.remote and "remote" in combined else "")
-    if not location:
-        for item_location in KNOWN_LOCATIONS:
-            if item_location in ("india",) or item_location == "remote":
+    # Fields are extracted from the result itself.  Never copy the user's query
+    # preferences onto a result; that made every row look identical.
+    location = None
+    for source in (title, content):
+        lowered_source = source.casefold()
+        for key, canonical in LOCATION_CANONICAL.items():
+            if key == "remote":
                 continue
-            if re.search(rf"\b{re.escape(item_location)}\b", combined):
-                location = item_location.title()
+            if re.search(rf"\b{re.escape(key)}\b", lowered_source):
+                location = canonical
                 break
-    if not location and "remote" in combined:
-        location = "Remote"
+        if location:
+            break
 
-    experience = prefs.experience
-    if not experience:
+    experience = None
+    if re.search(
+        r"\b(?:freshers?|entry[\s-]?levels?|graduates?|0\s*[-–]\s*2\s*years?)\b",
+        combined,
+    ):
+        experience = "Fresher / entry-level"
+    else:
         match = re.search(r"\b\d+\s*[-–]\s*\d+\s*years?\b", content, re.IGNORECASE)
         if match:
             experience = match.group(0)
 
-    employment = prefs.employment_type
-    if not employment and re.search(r"\b(full[\s-]?time)\b", combined):
+    employment = None
+    if re.search(r"\bfull[\s-]?time\b", combined):
         employment = "Full-time"
-    if not employment and re.search(r"\b(remote)\b", combined):
+    elif re.search(r"\bpart[\s-]?time\b", combined):
+        employment = "Part-time"
+    elif re.search(r"\binternships?\b", combined):
+        employment = "Internship"
+    elif re.search(r"\bremote\b(?!\s*\()", combined) or re.search(
+        r"\bwork\s+from\s+home\b", combined
+    ):
+        # "Remote(10)" is a facet count on a listing page, not a job attribute.
         employment = "Remote"
 
     skills = [skill for skill in prefs.skills if skill.casefold() in combined]
-    salary = ""
-    salary_match = re.search(r"(?:₹|\$|€|£)\s?\d[\d,.]*\s*(?:lpa|per\s+annum|k|a\s+month)?", content, re.IGNORECASE)
+    salary = None
+    salary_match = re.search(
+        r"(?:₹|\$|€|£)\s?\d[\d,.]*\s*(?:lpa|per\s+annum|k|a\s+month)?",
+        content,
+        re.IGNORECASE,
+    )
     if salary_match:
         salary = _clean_text(salary_match.group(0))
 
-    description = content[:400].rstrip()
+    cleaned_content = _strip_navigation_boilerplate(content)
+    description = cleaned_content[:400].rstrip() or None
     return {
         "kind": "job",
         "title": title,
-        "company": company or "Not specified",
-        "location": location or "Not specified",
-        "experience": experience or "Not specified",
-        "employment_type": employment or "Not specified",
-        "salary": salary or "Not specified",
-        "description": description or "Not specified",
+        "company": company or None,
+        "location": location,
+        "experience": experience,
+        "employment_type": employment,
+        "salary": salary,
+        "description": description,
         "skills": skills,
         "url": url,
         "source": platform,
@@ -466,7 +592,7 @@ def _dedupe_and_rank(listings: list[dict[str, Any]], prefs: JobPreferences) -> l
     for listing in listings:
         key = (
             re.sub(r"[^a-z0-9]", "", listing["title"].casefold()),
-            re.sub(r"[^a-z0-9]", "", listing["company"].casefold()),
+            re.sub(r"[^a-z0-9]", "", str(listing.get("company") or "").casefold()),
             listing["url"].split("?")[0].casefold(),
         )
         if key in seen:
@@ -476,10 +602,11 @@ def _dedupe_and_rank(listings: list[dict[str, Any]], prefs: JobPreferences) -> l
 
     role_terms = [term.casefold() for term in re.findall(r"[A-Za-z]+", prefs.role)]
     for listing in unique:
-        combined = f"{listing['title']} {listing['description']}".casefold()
+        combined = f"{listing['title']} {listing.get('description') or ''}".casefold()
         relevance = 0.0
         if any(term in combined for term in role_terms):
             relevance += 4.0
+        relevance += 2.0 * _url_quality(listing["url"])
         relevance += min(len([skill for skill in prefs.skills if skill.casefold() in combined]), 4) * 1.5
         if prefs.location and prefs.location.casefold() in combined:
             relevance += 2.0
@@ -523,6 +650,8 @@ async def search_jobs(prefs: JobPreferences) -> list[dict[str, Any]]:
                     "max_results": 5,
                     "include_answer": False,
                     "include_raw_content": False,
+                    "exclude_domains": list(_TAVILY_EXCLUDE_DOMAINS),
+                    "time_range": "month",
                 }
                 if domains:
                     payload["include_domains"] = domains
