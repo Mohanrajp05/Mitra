@@ -76,6 +76,85 @@ def test_result_fields_are_never_copied_from_user_preferences():
     assert "Build responsive sites" in parsed["description"]
 
 
+def _make_listing(location, index=0):
+    return {
+        "kind": "job",
+        "title": f"Web Developer {index}",
+        "company": f"Company {index}",
+        "location": location,
+        "experience": None,
+        "employment_type": None,
+        "salary": None,
+        "description": "Build websites.",
+        "skills": [],
+        "url": f"{GOOD_URL}?loc={index}-{location.replace(' ', '-')}",
+        "source": "jsearch",
+        "score": 0.5,
+    }
+
+
+def test_location_ladder_stops_when_three_postings_found(monkeypatch):
+    js.clear_cache()
+    calls = []
+
+    async def fake_provider(prefs):
+        calls.append(prefs.location)
+        count = 3 if len(calls) == 2 else 1
+        return [_make_listing(prefs.location, i) for i in range(count)]
+
+    monkeypatch.setattr(js, "_provider_search", fake_provider)
+    prefs = JobPreferences(role="Web Developer", location="Andhra Pradesh")
+
+    results = asyncio.run(js.search_jobs(prefs))
+
+    assert calls == ["Andhra Pradesh", "Visakhapatnam, Vijayawada"]
+    assert len(results) == 3
+    assert prefs.search_meta["broader"] is True
+    assert prefs.search_meta["used_location"] == "Visakhapatnam, Vijayawada"
+
+
+def test_location_ladder_keeps_exact_location_when_sufficient(monkeypatch):
+    js.clear_cache()
+    calls = []
+
+    async def fake_provider(prefs):
+        calls.append(prefs.location)
+        return [_make_listing(prefs.location, i) for i in range(3)]
+
+    monkeypatch.setattr(js, "_provider_search", fake_provider)
+    prefs = JobPreferences(role="Web Developer", location="Bengaluru")
+
+    asyncio.run(js.search_jobs(prefs))
+
+    assert calls == ["Bengaluru"]
+    assert prefs.search_meta["broader"] is False
+
+
+@pytest.mark.asyncio
+async def test_broader_location_is_marked_in_response(monkeypatch):
+    from app.services import chat_service
+
+    prefs = JobPreferences(role="Web Developer", location="Andhra Pradesh")
+
+    async def fake_search(profile):
+        profile.search_meta = {
+            "original_location": "Andhra Pradesh",
+            "used_location": "Visakhapatnam, Vijayawada",
+            "broader": True,
+        }
+        return [_make_listing("Visakhapatnam, Vijayawada")]
+
+    monkeypatch.setattr(chat_service, "search_jobs", fake_search)
+
+    result = await chat_service._run_job_search(
+        "Web Developer jobs in Andhra Pradesh",
+        {"role": "Web Developer", "location": "Andhra Pradesh"},
+        history=[],
+    )
+    assert "broadened the search" in result.answer
+    assert any(source.get("kind") == "job_search_scope" for source in result.sources)
+
+
 class FakeProvider:
     def __init__(self, results=None, error=False):
         self.results = results or []
@@ -144,7 +223,7 @@ def test_jsearch_fallback_behaviour(monkeypatch, mode):
         assert tavily_called == []
         assert results[0]["source"] == "jsearch"
     else:
-        assert len(tavily_called) == 1
+        assert len(tavily_called) >= 1
         assert results[0]["source"] == "tavily"
 
 

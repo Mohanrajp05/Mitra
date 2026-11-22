@@ -130,6 +130,37 @@ LOCATION_CANONICAL = {
 }
 
 
+STATE_MAJOR_CITIES = {
+    "andhra pradesh": ["Visakhapatnam", "Vijayawada"],
+    "telangana": ["Hyderabad", "Warangal"],
+    "karnataka": ["Bengaluru", "Mysuru"],
+    "maharashtra": ["Mumbai", "Pune"],
+    "tamil nadu": ["Chennai", "Coimbatore"],
+    "uttar pradesh": ["Noida", "Lucknow"],
+    "west bengal": ["Kolkata", "Howrah"],
+    "gujarat": ["Ahmedabad", "Surat"],
+    "kerala": ["Kochi", "Thiruvananthapuram"],
+    "delhi": ["New Delhi", "Gurugram"],
+}
+
+CITY_TO_STATE = {
+    "bengaluru": "Karnataka",
+    "bangalore": "Karnataka",
+    "hyderabad": "Telangana",
+    "mumbai": "Maharashtra",
+    "pune": "Maharashtra",
+    "chennai": "Tamil Nadu",
+    "kolkata": "West Bengal",
+    "ahmedabad": "Gujarat",
+    "noida": "Uttar Pradesh",
+    "gurugram": "Delhi",
+    "gurgaon": "Delhi",
+    "kochi": "Kerala",
+    "visakhapatnam": "Andhra Pradesh",
+    "vijayawada": "Andhra Pradesh",
+}
+
+
 def normalize_location(value: str | None) -> str | None:
     """Normalize known place names (including common typos) to canonical form."""
     cleaned = re.sub(r"\s+", " ", str(value or "").strip()).strip(".,!?:-").strip()
@@ -699,11 +730,27 @@ def _dedupe_and_rank(listings: list[dict[str, Any]], prefs: JobPreferences) -> l
     return unique[:TAVILY_MAX_RESULTS]
 
 
+def _location_variants(location: str | None) -> list[str | None]:
+    """exact location → major cities of its state → India."""
+    if not location:
+        return [None]
+    canonical = normalize_location(location) or location
+    variants: list[str | None] = [canonical]
+    state = STATE_MAJOR_CITIES.get(canonical.casefold())
+    if not state:
+        mapped = CITY_TO_STATE.get(canonical.casefold())
+        state = STATE_MAJOR_CITIES.get((mapped or "").casefold())
+    if state:
+        variants.append(", ".join(state))
+    variants.append("India")
+    return list(dict.fromkeys(variants))
+
+
 def _cache_key(queries: list[str], platform: str) -> str:
     return "|".join(queries) + "::" + platform
 
 
-async def search_jobs(prefs: JobPreferences) -> list[dict[str, Any]]:
+async def _provider_search(prefs: JobPreferences) -> list[dict[str, Any]]:
     """JSearch first; fall back to Tavily when it returns nothing or fails."""
     queries = build_queries(prefs)
     key = _cache_key(queries, prefs.platform)
@@ -725,6 +772,24 @@ async def search_jobs(prefs: JobPreferences) -> list[dict[str, Any]]:
 
     results = _dedupe_and_rank(listings, prefs)
     _cache[key] = (time.monotonic() + CACHE_TTL_SECONDS, results)
+    return results
+
+
+async def search_jobs(prefs: JobPreferences) -> list[dict[str, Any]]:
+    """Try narrower locations first; broaden only when too few postings exist."""
+    original_location = prefs.location
+    variants = _location_variants(original_location)
+    results: list[dict[str, Any]] = []
+    for index, location in enumerate(variants):
+        prefs.location = location or ""
+        results = await _provider_search(prefs)
+        if len(results) >= 3 or index == len(variants) - 1:
+            prefs.search_meta = {
+                "original_location": original_location,
+                "used_location": location,
+                "broader": index > 0,
+            }
+            return results
     return results
 
 

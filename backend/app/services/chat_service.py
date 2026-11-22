@@ -418,11 +418,22 @@ async def _run_job_search(
             evidence_text="",
         )
 
+    search_meta = getattr(prefs, "search_meta", None) or {}
+    answer = format_job_answer(listings, prefs)
+    if search_meta.get("broader"):
+        answer += (
+            f"\n\nNote: fewer than 3 postings were found in "
+            f"{search_meta.get('original_location') or 'that location'}, so I "
+            f"broadened the search to {search_meta.get('used_location') or 'India'}."
+        )
+
     preferences_source = {"kind": "job_preferences", **asdict(prefs)}
     sources = job_sources(listings) + [preferences_source] if listings else []
+    if search_meta.get("broader"):
+        sources.append({"kind": "job_search_scope", **search_meta})
     return PipelineResult(
         query=content,
-        answer=format_job_answer(listings, prefs),
+        answer=answer,
         has_evidence=bool(listings),
         sources=sources,
         evidence_text="",
