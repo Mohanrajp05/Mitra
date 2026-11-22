@@ -893,7 +893,18 @@ def job_sources(listings: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def format_job_answer(listings: list[dict[str, Any]], prefs: JobPreferences) -> str:
     if not listings:
-        return "I could not find any public job listings matching those preferences. Try a broader role, a different location, or fewer skill filters."
+        suggestions = []
+        if prefs.location:
+            suggestions.append("try nearby cities or a broader location such as India")
+        if prefs.experience:
+            suggestions.append("remove the experience filter")
+        if prefs.role:
+            suggestions.append(f"try a broader title such as 'Junior {prefs.role}'")
+        suggestions.append("ask 'which companies are hiring for this role?' to see company career pages")
+        return (
+            "I could not find any verified individual job postings matching those "
+            "preferences. " + "; ".join(suggestions) + "."
+        )
     scope = f"{prefs.role or 'your search'}"
     if prefs.location:
         scope += f" in {prefs.location}"

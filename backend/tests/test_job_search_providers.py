@@ -13,6 +13,7 @@ from app.services.job_search_service import (
     _url_quality,
     free_text_location,
     normalize_location,
+    format_job_answer,
     search_jobs,
 )
 
@@ -91,6 +92,16 @@ def _make_listing(location, index=0):
         "source": "jsearch",
         "score": 0.5,
     }
+
+
+def test_empty_results_answer_offers_suggestions():
+    answer = js.format_job_answer(
+        [], JobPreferences(role="Web Developer", location="Pune", experience="Fresher / entry-level")
+    )
+    assert "could not find any verified individual job postings" in answer
+    assert "Junior Web Developer" in answer
+    assert "broader location" in answer
+    assert "which companies are hiring" in answer
 
 
 def test_location_ladder_stops_when_three_postings_found(monkeypatch):
