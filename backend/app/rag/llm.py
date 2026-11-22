@@ -238,7 +238,9 @@ class LLMClient:
                     self.settings.model
                     if index == 0
                     else (
-                        self.settings.fallback_models[index - 1]
+                        self.settings.fallback_models[
+                            min(index - 1, len(self.settings.fallback_models) - 1)
+                        ]
                         if self.settings.fallback_models
                         else self.settings.model
                     )
@@ -280,12 +282,22 @@ class LLMClient:
 
                 try:
                     self._raise_for_status(response)
-                except (LLMCredentialsError, LLMResponseError) as exc:
+                except LLMCredentialsError as exc:
                     _record_metric("record_llm_provider_failure", provider_slug)
                     logger.warning(
                         "llm provider=%s model=%s failed status=%s error=%s",
                         provider_slug,
-                        self.settings.model,
+                        attempt_model,
+                        response.status_code,
+                        str(exc),
+                    )
+                    raise
+                except LLMResponseError as exc:
+                    _record_metric("record_llm_provider_failure", provider_slug)
+                    logger.warning(
+                        "llm provider=%s model=%s failed status=%s error=%s",
+                        provider_slug,
+                        attempt_model,
                         response.status_code,
                         str(exc),
                     )
