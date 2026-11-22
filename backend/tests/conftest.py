@@ -30,6 +30,12 @@ def disable_database_pool(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def disable_llm_job_validation(monkeypatch):
+    """Keep the test suite offline: no per-result LLM calls in unit tests."""
+    monkeypatch.setenv("JOB_SEARCH_LLM_VALIDATION", "false")
+
+
+@pytest.fixture(autouse=True)
 def fresh_rate_limiter():
     """Give every test a clean in-process rate limiter."""
     from app.core import rate_limit

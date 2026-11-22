@@ -141,7 +141,7 @@ def normalize_location(value: str | None) -> str | None:
     return cleaned
 
 
-BAD_URL_FRAGMENTS = ("/q-", "-jobs.html", "/jobs-in-", "/profile_")
+BAD_URL_FRAGMENTS = ("/q-", "-jobs.html", "/jobs-in-", "-jobs-in-", "/profile_")
 BAD_HOSTS = ("rocketreach.co", "zoominfo.com")
 GOOD_URL_FRAGMENTS = ("/job/", "/viewjob", "/jobs/view/", "/job-posting/")
 ATS_HOSTS = ("greenhouse.io", "lever.co", "ashbyhq.com", "workday")
