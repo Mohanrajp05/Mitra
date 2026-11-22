@@ -628,16 +628,38 @@ def _cache_key(queries: list[str], platform: str) -> str:
 
 
 async def search_jobs(prefs: JobPreferences) -> list[dict[str, Any]]:
-    api_key = os.getenv("TAVILY_API_KEY", "").strip()
-    if not api_key:
-        raise TavilyError("Job search is not configured. Please add the Tavily API key on the server.")
-
+    """JSearch first; fall back to Tavily when it returns nothing or fails."""
     queries = build_queries(prefs)
     key = _cache_key(queries, prefs.platform)
     cached = _cache.get(key)
     if cached and cached[0] > time.monotonic():
         return cached[1]
 
+    listings: list[dict[str, Any]] = []
+    try:
+        from app.services.job_providers import JSearchProvider
+
+        listings = await JSearchProvider().search(prefs)
+    except Exception:
+        # A provider outage must not break the whole search.
+        listings = []
+
+    if not listings:
+        listings = await _search_tavily(prefs, queries=queries)
+
+    results = _dedupe_and_rank(listings, prefs)
+    _cache[key] = (time.monotonic() + CACHE_TTL_SECONDS, results)
+    return results
+
+
+async def _search_tavily(
+    prefs: JobPreferences, queries: list[str] | None = None
+) -> list[dict[str, Any]]:
+    api_key = os.getenv("TAVILY_API_KEY", "").strip()
+    if not api_key:
+        raise TavilyError("Job search is not configured. Please add the Tavily API key on the server.")
+
+    queries = queries if queries is not None else build_queries(prefs)
     domains = PLATFORM_DOMAINS.get(prefs.platform, [])
     listings: list[dict[str, Any]] = []
     try:
@@ -675,9 +697,7 @@ async def search_jobs(prefs: JobPreferences) -> list[dict[str, Any]]:
     except ValueError as exc:
         raise TavilyError("The job search service returned an unreadable response.") from exc
 
-    results = _dedupe_and_rank(listings, prefs)
-    _cache[key] = (time.monotonic() + CACHE_TTL_SECONDS, results)
-    return results
+    return listings
 
 
 def job_sources(listings: list[dict[str, Any]]) -> list[dict[str, Any]]:
