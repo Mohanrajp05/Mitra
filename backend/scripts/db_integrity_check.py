@@ -1,8 +1,3 @@
-"""Read-only database integrity check for the Stage 9 audit.
-
-Prints only structural facts: table existence, row counts, constraints,
-indexes. Never prints connection details or credentials.
-"""
 
 from app.database.connection import close_pool, get_connection, open_pool
 

@@ -1,9 +1,4 @@
-"""Apply a non-destructive migration file against the application database.
 
-Only runs statements that create new objects or add nullable columns (CREATE
-TABLE/INDEX/TRIGGER IF NOT EXISTS and ALTER TABLE ... ADD COLUMN IF NOT
-EXISTS). Refuses files containing destructive statements.
-"""
 
 import re
 import sys

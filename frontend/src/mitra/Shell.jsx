@@ -131,6 +131,7 @@ export default function Shell({ children }) {
       <header className={`topbar ${isAssistantPage ? 'topbar-with-back' : ''}`}>
         <div className="topbar-brand">
           <Logo />
+          <span className="role-badge role-badge-recruiter">Recruiter</span>
           {isAssistantPage && (
             <button
               type="button"

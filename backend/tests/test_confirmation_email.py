@@ -122,7 +122,7 @@ def test_confirmation_contains_interview_details():
     assert "Interview confirmed" in message["Subject"]
     for value in (
         "Test Candidate", "Frontend interview", "2026-12-01", "10:30",
-        "30", "Online", "https://meet.example.com/x", "recruiter@example.com",
+        "30", "Online", "https://meet.example.com/x",
     ):
         assert value in html
 

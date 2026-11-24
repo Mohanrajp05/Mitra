@@ -102,12 +102,6 @@ def build_confirmation_message(interview: dict[str, Any]) -> EmailMessage:
             "<p style=\"margin:6px 0\"><strong>Location:</strong> "
             f"{escape(str(interview['location']))}</p>"
         )
-    recruiter = str(interview.get("recruiter_email") or "").strip()
-    recruiter_row = (
-        f"<p style=\"margin:6px 0\"><strong>Recruiter:</strong> {escape(recruiter)}</p>"
-        if recruiter
-        else ""
-    )
     company = escape(settings.app_name)
 
     html = f"""<!doctype html>
@@ -122,7 +116,7 @@ def build_confirmation_message(interview: dict[str, Any]) -> EmailMessage:
       <p style="margin:6px 0"><strong>Time:</strong> {start} – {end} ({zone})</p>
       <p style="margin:6px 0"><strong>Duration:</strong> {duration} minutes</p>
       <p style="margin:6px 0"><strong>Mode:</strong> {mode}</p>
-      {meeting_row}{location_row}{recruiter_row}
+      {meeting_row}{location_row}
     </div>
     <p style="margin:0;color:#777;font-size:12px">This confirmation was sent by {company}. Please contact your recruiter if you need to reschedule.</p>
   </div>
@@ -133,7 +127,6 @@ def build_confirmation_message(interview: dict[str, Any]) -> EmailMessage:
         f"Duration: {duration} minutes\nMode: {mode}\n"
         + (f"Meeting link: {interview['meeting_link']}\n" if meeting_row else "")
         + (f"Location: {interview['location']}\n" if location_row else "")
-        + (f"Recruiter: {recruiter}\n" if recruiter_row else "")
     )
 
     message = EmailMessage()

@@ -20,7 +20,7 @@ SESSION_ID = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
 FIRST_MESSAGE = (
     "I am Mohan and I have completed a full stack web development internship at a "
     "startup and now I am searching for a job role for this particular full stack "
-    "development so please list the companies who are hiring for this role."
+    "development so please list the jobs hiring for this role."
 )
 
 LISTING = {

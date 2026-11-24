@@ -15,7 +15,7 @@ import re
 from pydantic import BaseModel
 
 from app.rag.llm import LLMClient, load_llm_settings
-from app.services.job_search_service import is_job_search
+from app.services.job_search_service import is_career_info_question, is_job_search
 
 MAX_MESSAGE_LENGTH = 4_000
 MAX_CONTROL_CHARS = 20
@@ -243,6 +243,9 @@ def classify_message(text: str) -> str:
 
     if is_job_search(cleaned):
         return "job_search"
+
+    if is_career_info_question(cleaned):
+        return "career_info"
 
     if CAPABILITY_PATTERN.search(cleaned):
         return "capability"

@@ -375,6 +375,19 @@ export default function JobsPage() {
                   </div>
                   <div className="job-card-foot">
                     <strong>Posted {postedLabel(job.created_at)}</strong>
+                    <span className="job-card-foot-actions">
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        onClick={(event) => {
+                          event.preventDefault()
+                          event.stopPropagation()
+                          navigate(`/jobs/${job.id}/applicants`)
+                        }}
+                      >
+                        <NwIcon name="users" /> Applicants
+                      </button>
+                    </span>
                     {(job.required_skills || []).length > 0 && (
                       <span className="chip chip-indigo"><NwIcon name="sparkle" /> {(job.required_skills || []).length} skills</span>
                     )}

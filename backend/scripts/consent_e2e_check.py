@@ -1,9 +1,4 @@
-"""End-to-end consent flow check against the real PostgreSQL database.
 
-Uses the first existing candidate. Grants, reads, withdraws consent, then
-removes the consent row again so the database is left exactly as found.
-Prints structural results only.
-"""
 
 from app.core.security import get_current_user
 from app.database.connection import close_pool, get_connection, open_pool

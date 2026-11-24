@@ -9,15 +9,16 @@ from contextvars import ContextVar
 
 import psycopg
 from anyio import to_thread
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from psycopg_pool import PoolClosed, PoolTimeout
 
-from app.api import auth, candidates, chat, health, interviews, job_search, jobs, notifications, ops, privacy, rag, scheduling
+from app.api import applications, auth, candidate_interviews, candidate_portal, candidates, chat, health, interviews, job_search, jobs, messaging, notifications, ops, privacy, rag, scheduling
 from app.core.config import settings
 from app.core.metrics import get_metrics
 from app.core.rate_limit import RateLimitExceeded
+from app.core.roles import require_recruiter
 from app.database.connection import (
     DatabaseNotConfiguredError,
     DatabasePoolUnavailableError,
@@ -363,13 +364,20 @@ async def rag_service_error_handler(request: Request, exc):
 app.include_router(health.router)
 app.include_router(job_search.router)
 app.include_router(auth.router)
-app.include_router(jobs.router)
+app.include_router(jobs.router, dependencies=[Depends(require_recruiter)])
 app.include_router(candidates.router)
+app.include_router(candidate_portal.router)
+app.include_router(applications.candidate_router)
+app.include_router(applications.recruiter_router)
+app.include_router(candidate_interviews.candidate_router)
+app.include_router(candidate_interviews.recruiter_router)
+app.include_router(messaging.candidate_router)
+app.include_router(messaging.recruiter_router)
 app.include_router(rag.router)
 app.include_router(chat.router)
-app.include_router(interviews.router)
-app.include_router(scheduling.router)
-app.include_router(notifications.router)
+app.include_router(interviews.router, dependencies=[Depends(require_recruiter)])
+app.include_router(scheduling.router, dependencies=[Depends(require_recruiter)])
+app.include_router(notifications.router, dependencies=[Depends(require_recruiter)])
 app.include_router(ops.router)
 app.include_router(privacy.router)
 

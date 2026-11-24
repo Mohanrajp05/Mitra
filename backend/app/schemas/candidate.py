@@ -17,6 +17,7 @@ class CandidateBase(BaseModel):
     skills: list[str] = Field(default_factory=list, max_length=50)
     experience_years: float | None = Field(default=None, ge=0, le=60)
     education: str | None = Field(default=None, max_length=500)
+    location: str | None = Field(default=None, max_length=200)
     resume_text: str | None = Field(default=None, max_length=50_000)
 
     @field_validator("email")
@@ -28,7 +29,7 @@ class CandidateBase(BaseModel):
             raise ValueError("Enter a valid email address.")
         return value
 
-    @field_validator("phone", "education", "resume_text", mode="before")
+    @field_validator("phone", "education", "location", "resume_text", mode="before")
     @classmethod
     def empty_text_to_none(cls, value):
         if isinstance(value, str) and not value.strip():
@@ -57,6 +58,7 @@ class CandidateUpdate(BaseModel):
     skills: list[str] | None = Field(default=None, max_length=50)
     experience_years: float | None = Field(default=None, ge=0, le=60)
     education: str | None = Field(default=None, max_length=500)
+    location: str | None = Field(default=None, max_length=200)
     resume_text: str | None = Field(default=None, max_length=50_000)
 
     @field_validator("email")
@@ -68,7 +70,7 @@ class CandidateUpdate(BaseModel):
             raise ValueError("Enter a valid email address.")
         return value
 
-    @field_validator("phone", "education", "resume_text", mode="before")
+    @field_validator("phone", "education", "location", "resume_text", mode="before")
     @classmethod
     def empty_text_to_none(cls, value):
         if isinstance(value, str) and not value.strip():

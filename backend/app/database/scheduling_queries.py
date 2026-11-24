@@ -24,6 +24,9 @@ SCHEDULED_COLUMNS = (
     "si.created_at, si.updated_at, si.recruiter_email, "
     "si.confirmation_email_status, si.confirmation_email_recipient, "
     "si.confirmation_email_sent_at, si.confirmation_email_attempts, "
+    "si.candidate_response, si.response_at, si.decline_reason, "
+    "si.reschedule_requested_date, si.reschedule_requested_start_time, "
+    "si.reschedule_reason, si.reschedule_status, si.reschedule_decided_at, "
     "c.full_name AS candidate_name, c.email AS candidate_email"
 )
 
@@ -288,3 +291,25 @@ def mark_confirmation_failed(
             (error[:500], retry_delay_minutes, interview_id),
         )
         return cursor.rowcount > 0
+
+
+def get_interview_for_candidate_email(connection, candidate_email: str, interview_id: str) -> dict[str, Any] | None:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f"SELECT {SCHEDULED_COLUMNS} FROM scheduled_interviews si "
+            "JOIN candidates c ON c.id = si.candidate_id AND c.owner_user_id = si.user_id "
+            "WHERE si.id = %s AND c.email = %s",
+            (interview_id, candidate_email),
+        )
+        return cursor.fetchone()
+
+
+def list_interviews_for_candidate_email(connection, candidate_email: str) -> list[dict[str, Any]]:
+    with connection.cursor() as cursor:
+        cursor.execute(
+            f"SELECT {SCHEDULED_COLUMNS} FROM scheduled_interviews si "
+            "JOIN candidates c ON c.id = si.candidate_id AND c.owner_user_id = si.user_id "
+            "WHERE c.email = %s ORDER BY si.starts_at ASC",
+            (candidate_email,),
+        )
+        return cursor.fetchall()

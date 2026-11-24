@@ -80,6 +80,14 @@ class ScheduledInterviewResponse(BaseModel):
     time_zone: str = "UTC"
     created_at: datetime
     updated_at: datetime
+    candidate_response: str = "awaiting"
+    response_at: datetime | None = None
+    decline_reason: str | None = None
+    reschedule_requested_date: date | None = None
+    reschedule_requested_start_time: time | None = None
+    reschedule_reason: str | None = None
+    reschedule_status: str | None = None
+    reschedule_decided_at: datetime | None = None
 
 
 class AvailabilityResponse(BaseModel):

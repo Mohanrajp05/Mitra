@@ -1,10 +1,4 @@
-"""Stage 9 performance measurements.
 
-Lightweight, offline benchmark of the components that do not require
-external services. Every number printed is an actual measurement taken
-during this run. LLM latency is excluded because it requires real
-provider credentials; provider latency therefore stays NOT TESTED.
-"""
 
 import statistics
 import tempfile

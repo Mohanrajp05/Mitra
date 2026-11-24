@@ -5479,3 +5479,61 @@ body:has(.jobs-page)::-webkit-scrollbar-thumb { background: rgba(120, 120, 140, 
   .np .iv-schedule-layout { grid-template-columns: minmax(0, 1fr); }
   .np .iv-calendar-view, .np .iv-calendar-view.month { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Candidate resume upload */
+.np .resume-grid { display: grid; gap: 18px; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); align-items: start; }
+.np .resume-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 32px 22px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.np .resume-dropzone.is-dragging {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  box-shadow: var(--glow);
+}
+.np .resume-drop-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--primary);
+}
+.np .resume-drop-icon .icon { width: 22px; height: 22px; }
+.np .resume-drop-title { margin: 0; font-weight: 600; }
+.np .resume-selected,
+.np .resume-file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.np .resume-selected .icon,
+.np .resume-file-row .icon { color: var(--primary); flex: none; }
+.np .resume-file-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.np .resume-hint { margin: 2px 0 0; font-size: 12px; color: var(--text-2); }
+.np .resume-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.np .resume-actions .btn { display: inline-flex; align-items: center; gap: 6px; }
+
+@media (max-width: 900px) {
+  .np .resume-grid { grid-template-columns: minmax(0, 1fr); }
+}
+

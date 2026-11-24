@@ -1,6 +1,6 @@
 """Pydantic schemas for job requests and responses."""
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 from uuid import UUID
 
@@ -9,6 +9,10 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from app.utils.validators import clean_skills
 
 JobStatus = Literal["open", "closed"]
+ExperienceLevel = Literal["ALL", "Fresher", "Internship", "Experienced"]
+JobType = Literal["Full-time", "Part-time", "Internship", "Contract"]
+CompensationType = Literal["Paid", "Unpaid", "Stipend"]
+WorkMode = Literal["Remote", "Hybrid", "On-site"]
 
 
 class JobBase(BaseModel):
@@ -21,6 +25,14 @@ class JobBase(BaseModel):
     experience_required: float | None = Field(default=None, ge=0, le=60)
     location: str | None = Field(default=None, max_length=200)
     status: JobStatus = "open"
+    experience_level: ExperienceLevel | None = None
+    job_type: JobType | None = None
+    internship_duration_months: int | None = Field(default=None, ge=1, le=24)
+    compensation_type: CompensationType | None = None
+    salary_stipend: str | None = Field(default=None, max_length=200)
+    work_mode: WorkMode | None = None
+    required_documents: list[str] = Field(default_factory=list, max_length=20)
+    application_deadline: date | None = None
 
     @field_validator("company", "location", mode="before")
     @classmethod
@@ -52,8 +64,16 @@ class JobUpdate(BaseModel):
     experience_required: float | None = Field(default=None, ge=0, le=60)
     location: str | None = Field(default=None, max_length=200)
     status: JobStatus | None = None
+    experience_level: ExperienceLevel | None = None
+    job_type: JobType | None = None
+    internship_duration_months: int | None = Field(default=None, ge=1, le=24)
+    compensation_type: CompensationType | None = None
+    salary_stipend: str | None = Field(default=None, max_length=200)
+    work_mode: WorkMode | None = None
+    required_documents: list[str] | None = Field(default=None, max_length=20)
+    application_deadline: date | None = None
 
-    @field_validator("company", "location", mode="before")
+    @field_validator("company", "location", "salary_stipend", mode="before")
     @classmethod
     def empty_text_to_none(cls, value):
         if isinstance(value, str) and not value.strip():
@@ -77,6 +97,14 @@ class JobUpdate(BaseModel):
         if any(len(skill) > 80 for skill in skills):
             raise ValueError("Each skill must be 80 characters or fewer.")
         return skills
+
+    @field_validator("required_documents")
+    @classmethod
+    def validate_documents(cls, value: list[str] | None) -> list[str] | None:
+        if value is None:
+            return None
+        cleaned = [str(v).strip() for v in value if str(v).strip()]
+        return cleaned
 
 
 class JobResponse(JobBase):

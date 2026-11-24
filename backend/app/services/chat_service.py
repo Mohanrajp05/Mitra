@@ -34,15 +34,23 @@ from app.services.guardrails import (
 from app.services.job_search_service import (
     JobPreferences,
     TavilyError,
+    build_session_context,
     clarification_question,
     extract_preferences,
     fallback_role,
     format_company_answer,
+    format_company_vacancy_answer,
     format_job_answer,
+    is_career_info_question,
     is_company_hiring_query,
+    is_company_listing_query,
     is_job_search,
     job_sources,
+    _merge_list,
     missing_essential,
+    _pending_job_search_missing,
+    references_previous_companies,
+    search_company_vacancies,
     search_hiring_companies,
     search_jobs,
 )
@@ -74,6 +82,20 @@ def _require_session(connection, owner_user_id: str, session_id: str) -> dict[st
     if session is None:
         raise SessionNotFoundError("Chat session not found.")
     return session
+
+
+def _is_pending_answer(content: str) -> bool:
+    """A short answer to a pending clarification, not a fresh search request."""
+    cleaned = (content or "").strip()
+    if not cleaned or len(cleaned) > 120:
+        return False
+    if is_job_search(cleaned) or references_previous_companies(cleaned):
+        return False
+    if is_company_listing_query(cleaned) or is_career_info_question(cleaned):
+        return False
+    if "?" in cleaned:
+        return False
+    return True
 
 
 def _session_title(title: str | None) -> str:
@@ -239,27 +261,6 @@ def _load_history(owner_user_id: str, session_id: str) -> list[dict[str, Any]]:
             }
         )
     return history
-
-
-def _pending_job_search_missing(history: list[dict[str, Any]] | None) -> str:
-    """Return the first still-missing job-search preference from history."""
-    for message in reversed(list(history or [])):
-        if str(message.get("role") or "") != "assistant":
-            continue
-        sources = message.get("sources") or []
-        if isinstance(sources, dict):
-            sources = [sources]
-        for source in sources if isinstance(sources, list) else []:
-            if isinstance(source, dict) and source.get("kind") == "job_search_prompt":
-                missing = source.get("missing") or []
-                if isinstance(missing, str) and missing.strip():
-                    return missing.strip()
-                if isinstance(missing, (list, tuple)) and missing:
-                    return str(missing[0])
-    return ""
-
-
-
 def _persist_exchange(
     owner_user_id: str,
     session_id: str,
@@ -307,26 +308,57 @@ async def send_message(
         history = []
 
     kind = classify_message(content)
-    pending_missing = _pending_job_search_missing(history)
+    context = build_session_context(history)
+    pending_missing = context.pending_missing
+    career = kind == "career_info" or is_career_info_question(content)
 
     # Fixed answers and security refusals always win first.
     if kind in ("greeting", "capability", "injection", "off_topic"):
         result = _general_answer(content, kind)
-    elif kind == "job_search" or payload.job_search or pending_missing:
-        # The user is either starting a job search or answering a pending
-        # role/location question.  This must be decided BEFORE the standalone
-        # intent check, otherwise a short answer ("Andhra Pradesh") is judged
-        # out of context and rejected as off-topic.
+    elif career:
+        # Salary / career-path / role-comparison questions must never be
+        # hijacked by a remembered job-search intent.
+        logger.info("chat career-info intent=%s", kind)
+        query_kwargs: dict[str, Any] = {}
+        if payload.candidate_id:
+            query_kwargs["candidate_id"] = payload.candidate_id
+        if payload.job_id:
+            query_kwargs["job_id"] = payload.job_id
+        if payload.document_ids:
+            query_kwargs["document_ids"] = payload.document_ids
+        if history:
+            result = await rag_service.query(
+                owner_user_id, content, history=history, **query_kwargs
+            )
+        else:
+            result = await rag_service.query(owner_user_id, content, **query_kwargs)
+    elif (
+        kind == "job_search"
+        or references_previous_companies(content)
+        or (pending_missing and _is_pending_answer(content))
+        or (
+            bool(payload.job_search)
+            and kind in ("general", "job_search")
+            and not is_career_info_question(content)
+        )
+    ):
         result = await _run_job_search(
             content,
             payload.job_preferences,
             history=history,
             pending_missing=pending_missing,
+            context=context,
         )
     else:
         blocked = False
         if kind == "general":
-            verdict = await classify_unclear_message(content)
+            context_text = context.summary_text()
+            try:
+                verdict = await classify_unclear_message(
+                    content, context=context_text
+                )
+            except TypeError:
+                verdict = await classify_unclear_message(content)
             if verdict is False:
                 blocked = True
         if blocked:
@@ -357,8 +389,12 @@ async def _run_job_search(
     stored: dict[str, Any] | None = None,
     history: list[dict[str, Any]] | None = None,
     pending_missing: str | None = None,
+    context: Any = None,
 ) -> Any:
     from app.rag.pipeline import PipelineResult
+
+    if context is None:
+        context = build_session_context(history)
 
     # ChatSource responses include null metadata fields (document_id, chunk_id,
     # ...) which the frontend copies into job_preferences.  Keep only real
@@ -370,22 +406,51 @@ async def _run_job_search(
         if key in preference_fields and value is not None
     }
     base = JobPreferences(**clean_stored)
+    # Server-side session context is authoritative; stored prefs only fill gaps.
+    merged = base
+    try:
+        from app.services.job_search_service import SessionContext as _SC
+
+        if not isinstance(context, _SC):
+            context = build_session_context(history)
+    except Exception:
+        pass
+    server_prefs = context.preferences if hasattr(context, "preferences") else JobPreferences()
+    for field_name in preference_fields:
+        server_value = getattr(server_prefs, field_name)
+        client_value = getattr(merged, field_name)
+        if field_name == "skills":
+            if client_value and not server_value:
+                server_value = client_value
+            merged.skills = _merge_list(server_value, client_value) if server_value else list(client_value)
+        elif server_value not in ("", None, False):
+            setattr(merged, field_name, server_value)
+        elif client_value not in ("", None, False):
+            setattr(merged, field_name, client_value)
+    base = merged
+
+    if references_previous_companies(content):
+        return await _run_company_vacancy_search(content, base, context)
 
     if is_company_hiring_query(content):
-        return await _run_company_search(content, base, history)
+        return await _run_company_search(content, base, history, context)
+
+    if is_company_listing_query(content):
+        return await _run_company_listing_search(content, base, history, context)
 
     prefs = extract_preferences(content, base)
 
     # If a pending job-search question was answered, apply the answer to the
-    # pending slot instead of asking the same question again.
+    # pending slot instead of asking the same question again.  A brand-new
+    # job-search or follow-up request must never be mistaken for a short
+    # answer to the old question.
     pending = (
         _pending_job_search_missing(history)
         if pending_missing is None
         else pending_missing
     )
-    if pending and missing_essential(prefs):
+    if pending and missing_essential(prefs) and _is_pending_answer(content):
         if pending == "role" and not prefs.role:
-            # Preserve the user-provided role text verbatim.
             prefs.role = re.sub(r"\s+", " ", content.strip()).strip("?.! ").strip()
         elif pending == "location" and not prefs.location and not prefs.remote:
             prefs.location = re.sub(r"\s+", " ", content.strip()).strip("?.! ").strip()
@@ -393,7 +458,6 @@ async def _run_job_search(
     missing = missing_essential(prefs)
 
     if not prefs.role and missing == "role" and is_job_search(content):
-        # Accept user-provided role text that no alias pattern covers.
         fallback = fallback_role(content)
         if fallback:
             prefs.role = fallback
@@ -435,9 +499,11 @@ async def _run_job_search(
         )
 
     preferences_source = {"kind": "job_preferences", **asdict(prefs)}
-    sources = job_sources(listings) + [preferences_source] if listings else []
+    sources = job_sources(listings) + [preferences_source] if listings else [preferences_source]
     if search_meta.get("broader"):
         sources.append({"kind": "job_search_scope", **search_meta})
+    if not listings:
+        sources.append({"kind": "job_search_no_results", "preferences": asdict(prefs)})
     return PipelineResult(
         query=content,
         answer=answer,
@@ -451,6 +517,71 @@ async def _run_company_search(
     content: str,
     prefs: JobPreferences,
     history: list[dict[str, Any]] | None = None,
+    context: Any = None,
+) -> Any:
+    from app.rag.pipeline import PipelineResult
+
+    prefs = extract_preferences(content, prefs)
+
+    if not prefs.role:
+        missing = missing_essential(prefs)
+        if missing == "role":
+            return PipelineResult(
+                query=content,
+                answer=clarification_question("role", prefs),
+                has_evidence=False,
+                sources=[
+                    {
+                        "kind": "job_search_prompt",
+                        "missing": "role",
+                        "preferences": asdict(prefs),
+                    }
+                ],
+                evidence_text="",
+            )
+    if not prefs.location and not prefs.remote:
+        prefs.location = "India"
+
+    listings: list[dict[str, Any]] = []
+    try:
+        listings = await search_jobs(prefs)
+    except TavilyError as exc:
+        return PipelineResult(
+            query=content,
+            answer=str(exc),
+            has_evidence=False,
+            sources=[],
+            evidence_text="",
+        )
+
+    if not listings:
+        try:
+            listings = await search_hiring_companies(prefs)
+        except TavilyError as exc:
+            return PipelineResult(
+                query=content,
+                answer=str(exc),
+                has_evidence=False,
+                sources=[],
+                evidence_text="",
+            )
+
+    preferences_source = {"kind": "job_preferences", **asdict(prefs)}
+    sources = job_sources(listings) + [preferences_source] if listings else [preferences_source]
+    return PipelineResult(
+        query=content,
+        answer=format_company_answer(listings, prefs),
+        has_evidence=bool(listings),
+        sources=sources,
+        evidence_text="",
+    )
+
+
+async def _run_company_listing_search(
+    content: str,
+    prefs: JobPreferences,
+    history: list[dict[str, Any]] | None = None,
+    context: Any = None,
 ) -> Any:
     from app.rag.pipeline import PipelineResult
 
@@ -476,7 +607,7 @@ async def _run_company_search(
         prefs.location = "India"
 
     try:
-        listings = await search_hiring_companies(prefs)
+        listings = await search_jobs(prefs)
     except TavilyError as exc:
         return PipelineResult(
             query=content,
@@ -487,10 +618,85 @@ async def _run_company_search(
         )
 
     preferences_source = {"kind": "job_preferences", **asdict(prefs)}
-    sources = job_sources(listings) + [preferences_source] if listings else []
+    sources = job_sources(listings) + [preferences_source] if listings else [preferences_source]
+    if not listings:
+        sources.append({"kind": "job_search_no_results", "preferences": asdict(prefs)})
     return PipelineResult(
         query=content,
         answer=format_company_answer(listings, prefs),
+        has_evidence=bool(listings),
+        sources=sources,
+        evidence_text="",
+    )
+
+
+async def _run_company_vacancy_search(
+    content: str,
+    prefs: JobPreferences,
+    context: Any = None,
+) -> Any:
+    from app.rag.pipeline import PipelineResult
+
+    prefs = extract_preferences(content, prefs)
+
+    companies = getattr(context, "companies", []) or []
+    if not companies:
+        return PipelineResult(
+            query=content,
+            answer=(
+                "I don't have a verified company list from earlier in this "
+                "conversation, so I can't search vacancies for specific companies. "
+                "Ask me to find jobs for a role first, or name the companies."
+            ),
+            has_evidence=False,
+            sources=[
+                {
+                    "kind": "job_search_prompt",
+                    "missing": "companies",
+                    "preferences": asdict(prefs),
+                }
+            ],
+            evidence_text="",
+        )
+
+    if not prefs.role:
+        missing = missing_essential(prefs)
+        if missing == "role":
+            return PipelineResult(
+                query=content,
+                answer=clarification_question("role", prefs),
+                has_evidence=False,
+                sources=[
+                    {
+                        "kind": "job_search_prompt",
+                        "missing": "role",
+                        "preferences": asdict(prefs),
+                    }
+                ],
+                evidence_text="",
+            )
+    if not prefs.location and not prefs.remote:
+        prefs.location = "India"
+
+    try:
+        listings, coverage = await search_company_vacancies(prefs, companies)
+    except TavilyError as exc:
+        return PipelineResult(
+            query=content,
+            answer=str(exc),
+            has_evidence=False,
+            sources=[],
+            evidence_text="",
+        )
+
+    preferences_source = {"kind": "job_preferences", **asdict(prefs)}
+    sources = job_sources(listings) + [preferences_source]
+    sources.append({"kind": "company_vacancy_coverage", **coverage})
+    if not listings:
+        sources.append({"kind": "job_search_no_results", "preferences": asdict(prefs)})
+    return PipelineResult(
+        query=content,
+        answer=format_company_vacancy_answer(listings, prefs, coverage),
         has_evidence=bool(listings),
         sources=sources,
         evidence_text="",

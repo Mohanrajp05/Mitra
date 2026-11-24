@@ -36,6 +36,14 @@ CREATE TABLE IF NOT EXISTS jobs (
     location            TEXT,
     status              TEXT NOT NULL DEFAULT 'open'
                         CHECK (status IN ('open', 'closed')),
+    experience_level    TEXT,
+    job_type            TEXT,
+    internship_duration_months INTEGER,
+    compensation_type   TEXT,
+    salary_stipend      TEXT,
+    work_mode           TEXT,
+    required_documents   TEXT[] NOT NULL DEFAULT '{}',
+    application_deadline DATE,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -70,6 +78,7 @@ CREATE TABLE IF NOT EXISTS candidates (
                          OR experience_years >= 0
                      ),
     education        TEXT,
+    location         TEXT,
     resume_text      TEXT,
     -- Structured profile extracted from the linked resume (nullable JSONB;
     -- NULL = not extracted yet). See migrations/003_candidate_extracted_profile.sql.

@@ -95,7 +95,7 @@ class TestTrickyMessages:
 
     def test_salary_question_is_unclear_but_not_off_topic(self):
         kind = classify_message("what is a good salary for a developer")
-        assert kind == "general"
+        assert kind == "career_info"
 
     def test_prompt_injection_is_classified(self):
         for text in (

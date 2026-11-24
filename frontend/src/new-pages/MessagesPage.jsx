@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import NwIcon from './NwIcon'
 import Avatar from './Avatar'
 import { listCandidates } from '../services/candidates'
@@ -211,6 +212,11 @@ export default function MessagesPage() {
           <div className="eyebrow">Communication</div>
           <h1 className="page-title">Messages</h1>
           <p className="page-sub">Mitra drafts thoughtful emails. You review, tweak and send — nothing goes out without you.</p>
+        </div>
+        <div className="page-actions">
+          <Link to="/conversations" className="btn btn-secondary">
+            <NwIcon name="mail" /> Candidate conversations
+          </Link>
         </div>
       </header>
 

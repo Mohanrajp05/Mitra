@@ -75,6 +75,7 @@ export default function JobDetailPage() {
               <article className="card prose">
                 <h2>Matches</h2>
                 <p>Mitra scores candidates against the required skills below. Review them on the matches page.</p>
+                <Link to={`/jobs/${job.id}/applicants`} className="outline-btn">Applicants</Link>
                 <Link to="/matches" className="primary-btn">Open matches</Link>
               </article>
             </section>

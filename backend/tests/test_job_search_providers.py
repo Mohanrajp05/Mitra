@@ -1,6 +1,7 @@
 """Regression tests for job-search providers, parsing and fallback behaviour."""
 
 import asyncio
+import json as _json
 
 import pytest
 
@@ -226,6 +227,10 @@ async def test_company_hiring_query_returns_companies(monkeypatch):
             }
         ]
 
+    async def _empty_search(*args, **kwargs):
+        return []
+
+    monkeypatch.setattr(chat_service, "search_jobs", _empty_search)
     monkeypatch.setattr(chat_service, "search_hiring_companies", fake_company)
     monkeypatch.setattr(chat_service, "_check_session", lambda *args: None)
     monkeypatch.setattr(chat_service, "_load_history", lambda *args: [])
@@ -422,7 +427,7 @@ class FakeAsyncClient:
 
 def test_jsearch_provider_maps_structured_fields(monkeypatch):
     monkeypatch.setattr(job_providers.httpx, "AsyncClient", FakeAsyncClient)
-    provider = job_providers.JSearchProvider(api_key="dummy-key")
+    provider = job_providers.JSearchProvider(api_key="dummy-key", mode="rapidapi")
 
     results = asyncio.run(provider.search(JobPreferences(role="Web Developer", location="Bangalore")))
 
@@ -511,3 +516,218 @@ async def test_llm_fields_override_heuristics(monkeypatch):
     assert results[0]["company"] == "New Co"
     assert results[0]["location"] == "Andhra Pradesh"
     assert results[0]["employment_type"] == "Full-time"
+
+
+JSEARCH_ROW = {
+    "job_title": "React Developer",
+    "employer_name": "Acme",
+    "job_city": "Bangalore",
+    "job_state": "Karnataka",
+    "job_country": "IN",
+    "job_employment_type": "Full-time",
+    "job_apply_link": GOOD_URL,
+    "job_description": "Build React interfaces. 2-4 years of experience.",
+    "job_min_salary": 600000,
+    "job_max_salary": 900000,
+    "job_salary_period": "YEAR",
+    "job_posted_at_datetime_utc": "2026-11-20T00:00:00.000Z",
+}
+
+
+class RecordingResponse:
+    def __init__(self, payload=None, status_code=200, text=None):
+        self._payload = payload
+        self.status_code = status_code
+        self.text = text if text is not None else _json.dumps(payload or {})
+
+    def json(self):
+        if self._payload is None:
+            raise ValueError("no json body")
+        return self._payload
+
+
+def _install_recording_client(monkeypatch, response):
+    calls = {}
+
+    class RecordingClient:
+        def __init__(self, **kwargs):
+            calls["timeout"] = kwargs.get("timeout")
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        async def get(self, url, headers=None, params=None):
+            calls["url"] = url
+            calls["headers"] = headers
+            calls["params"] = params
+            return response
+
+    monkeypatch.setattr(job_providers.httpx, "AsyncClient", RecordingClient)
+    return calls
+
+
+def test_openwebninja_is_the_default_mode(monkeypatch):
+    monkeypatch.delenv("JSEARCH_PROVIDER", raising=False)
+    provider = job_providers.JSearchProvider(api_key="dummy-key")
+    assert provider.mode == "openwebninja"
+    assert provider.url == "https://api.openwebninja.com/jsearch/search"
+
+
+def test_openwebninja_mode_uses_x_api_key_header(monkeypatch):
+    monkeypatch.delenv("JSEARCH_COUNTRY", raising=False)
+    calls = _install_recording_client(monkeypatch, RecordingResponse({"data": [JSEARCH_ROW]}))
+    provider = job_providers.JSearchProvider(api_key="dummy-key", mode="openwebninja")
+
+    results = asyncio.run(provider.search(JobPreferences(role="React Developer", location="Bangalore")))
+
+    assert calls["url"] == "https://api.openwebninja.com/jsearch/search"
+    assert calls["headers"] == {"X-API-Key": "dummy-key"}
+    assert calls["params"]["country"] == "in"
+    assert calls["params"]["num_pages"] == "1"
+    assert "React Developer" in calls["params"]["query"]
+    assert len(results) == 1
+    mapped = results[0]
+    assert mapped["title"] == "React Developer"
+    assert mapped["company"] == "Acme"
+    assert mapped["location"] == "Bengaluru"
+    assert mapped["employment_type"] == "Full-time"
+    assert mapped["salary"] == "600000-900000 YEAR"
+    assert mapped["url"] == GOOD_URL
+    assert mapped["source"] == "jsearch"
+
+
+def test_openwebninja_accepts_search_v2_envelope(monkeypatch):
+    payload = {"status": "OK", "data": {"jobs": [JSEARCH_ROW], "cursor": "eyJwYWdlIjoyfQ=="}}
+    _install_recording_client(monkeypatch, RecordingResponse(payload))
+    provider = job_providers.JSearchProvider(api_key="dummy-key", mode="openwebninja")
+
+    results = asyncio.run(provider.search(JobPreferences(role="React Developer", location="Pune")))
+
+    assert len(results) == 1
+    assert results[0]["title"] == "React Developer"
+
+
+def test_openwebninja_empty_results_return_empty_list(monkeypatch):
+    _install_recording_client(monkeypatch, RecordingResponse({"data": []}))
+    provider = job_providers.JSearchProvider(api_key="dummy-key", mode="openwebninja")
+
+    results = asyncio.run(provider.search(JobPreferences(role="React Developer", location="Pune")))
+
+    assert results == []
+
+
+def test_openwebninja_403_raises_provider_error_and_redacts_key(monkeypatch):
+    secret = "ak_SECRETKEY123456"
+    body = f'{{"detail":"forbidden for {secret}"}}'
+    _install_recording_client(monkeypatch, RecordingResponse(None, status_code=403, text=body))
+    provider = job_providers.JSearchProvider(api_key=secret, mode="openwebninja")
+
+    with pytest.raises(job_providers.ProviderError) as excinfo:
+        asyncio.run(provider.search(JobPreferences(role="React Developer", location="Pune")))
+
+    message = str(excinfo.value)
+    assert "403" in message
+    assert "openwebninja" in message
+    assert secret not in message
+    assert "***" in message
+
+
+def test_openwebninja_429_raises_provider_error(monkeypatch):
+    _install_recording_client(
+        monkeypatch, RecordingResponse(None, status_code=429, text='{"message":"Too Many Requests"}')
+    )
+    provider = job_providers.JSearchProvider(api_key="dummy-key", mode="openwebninja")
+
+    with pytest.raises(job_providers.ProviderError) as excinfo:
+        asyncio.run(provider.search(JobPreferences(role="React Developer", location="Pune")))
+
+    assert "429" in str(excinfo.value)
+    assert "Too Many Requests" in str(excinfo.value)
+
+
+def test_openwebninja_without_key_returns_empty_list(monkeypatch):
+    monkeypatch.delenv("JSEARCH_API_KEY", raising=False)
+    monkeypatch.delenv("OPENWEBNINJA_API_KEY", raising=False)
+    monkeypatch.setattr(job_providers.httpx, "AsyncClient", _fail_if_called)
+    provider = job_providers.JSearchProvider(mode="openwebninja")
+
+    assert provider.configured is False
+    assert asyncio.run(provider.search(JobPreferences(role="React Developer"))) == []
+
+
+def _fail_if_called(*args, **kwargs):
+    raise AssertionError("HTTP client must not be created without an API key")
+
+
+def test_openwebninja_falls_back_to_openwebninja_key_name(monkeypatch):
+    monkeypatch.delenv("JSEARCH_API_KEY", raising=False)
+    monkeypatch.setenv("OPENWEBNINJA_API_KEY", "ak_from_openwebninja")
+    provider = job_providers.JSearchProvider(mode="openwebninja")
+    assert provider.configured is True
+    assert provider.api_key == "ak_from_openwebninja"
+
+
+def test_env_var_selects_rapidapi_mode(monkeypatch):
+    monkeypatch.setenv("JSEARCH_PROVIDER", "rapidapi")
+    provider = job_providers.JSearchProvider(api_key="dummy-key")
+    assert provider.mode == "rapidapi"
+    assert provider.url == "https://jsearch.p.rapidapi.com/search"
+
+
+def test_unknown_provider_value_falls_back_to_default(monkeypatch):
+    monkeypatch.setenv("JSEARCH_PROVIDER", "not-a-provider")
+    provider = job_providers.JSearchProvider(api_key="dummy-key")
+    assert provider.mode == "openwebninja"
+
+
+def test_rapidapi_mode_keeps_legacy_headers_and_params(monkeypatch):
+    calls = _install_recording_client(monkeypatch, RecordingResponse({"data": [JSEARCH_ROW]}))
+    provider = job_providers.JSearchProvider(api_key="dummy-key", mode="rapidapi")
+
+    asyncio.run(provider.search(JobPreferences(role="React Developer", location="Bangalore")))
+
+    assert calls["headers"]["X-RapidAPI-Key"] == "dummy-key"
+    assert calls["headers"]["X-RapidAPI-Host"] == "jsearch.p.rapidapi.com"
+    assert calls["params"] == {"query": "React Developer in Bangalore", "page": "1", "num_pages": "1"}
+
+
+@pytest.mark.parametrize("status_code,text", [(403, "Forbidden"), (429, "Too Many Requests")])
+def test_jsearch_error_falls_back_to_tavily(monkeypatch, status_code, text):
+    js.clear_cache()
+    _install_recording_client(
+        monkeypatch, RecordingResponse(None, status_code=status_code, text='{"message":"%s"}' % text)
+    )
+    monkeypatch.setenv("JSEARCH_API_KEY", "dummy-key")
+    monkeypatch.delenv("JSEARCH_PROVIDER", raising=False)
+    monkeypatch.delenv("JSEARCH_COUNTRY", raising=False)
+
+    tavily_called = []
+
+    async def fake_tavily(prefs, queries=None):
+        tavily_called.append(prefs)
+        return [
+            {
+                "kind": "job",
+                "title": "Fallback Job",
+                "company": None,
+                "location": None,
+                "url": GOOD_URL + "?fallback=1",
+                "source": "tavily",
+                "experience": None,
+                "employment_type": None,
+                "salary": None,
+                "description": None,
+                "skills": [],
+                "score": 0.5,
+            }
+        ]
+
+    monkeypatch.setattr(js, "_search_tavily", fake_tavily)
+
+    results = asyncio.run(search_jobs(JobPreferences(role="React Developer", location="Bengaluru")))
+
+    assert len(tavily_called) >= 1
+    assert results[0]["source"] == "tavily"

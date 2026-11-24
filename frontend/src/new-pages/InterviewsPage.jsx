@@ -294,6 +294,34 @@ export default function InterviewsPage() {
             <p><strong>When:</strong> {formatDate(selected.interview_date)} · {formatTime(selected.start_time)} – {formatTime(selected.end_time || endOfSlot(selected.start_time, selected.duration_minutes))}</p>
             <p><strong>Type:</strong> {selected.interview_type === 'online' ? 'Online' : 'In-person'} · {selected.interview_type === 'online' ? selected.meeting_link : selected.location}</p>
             <p><strong>Status:</strong> {selected.status}</p>
+            <p><strong>Candidate response:</strong> {selected.candidate_response || 'awaiting'}</p>
+            {selected.decline_reason && <p><strong>Decline reason:</strong> {selected.decline_reason}</p>}
+            {selected.reschedule_reason && <p><strong>Reschedule reason:</strong> {selected.reschedule_reason}</p>}
+            {selected.reschedule_requested_date && <p><strong>Suggested time:</strong> {selected.reschedule_requested_date} {String(selected.reschedule_requested_start_time || '').slice(0,5)}</p>}
+            {selected.reschedule_status === 'pending' && (
+              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                <button type="button" className="btn btn-primary" disabled={busy} onClick={async () => {
+                  setBusy(true)
+                  try {
+                    const token = await (await import('../services/auth')).getAccessToken()
+                    const res = await fetch(`${(await import('../services/api')).API_BASE_URL}/api/scheduled-interviews/${selected.id}/reschedule-decision`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ approve: true }) })
+                    if (!res.ok) throw new Error('Failed')
+                    await refresh()
+                    setSelected(null)
+                  } catch (e) { setError(e.message) } finally { setBusy(false) }
+                }}>Approve reschedule</button>
+                <button type="button" className="btn btn-secondary" disabled={busy} onClick={async () => {
+                  setBusy(true)
+                  try {
+                    const token = await (await import('../services/auth')).getAccessToken()
+                    const res = await fetch(`${(await import('../services/api')).API_BASE_URL}/api/scheduled-interviews/${selected.id}/reschedule-decision`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ approve: false }) })
+                    if (!res.ok) throw new Error('Failed')
+                    await refresh()
+                    setSelected(null)
+                  } catch (e) { setError(e.message) } finally { setBusy(false) }
+                }}>Reject reschedule</button>
+              </div>
+            )}
             {selected.notes && <p><strong>Notes:</strong> {selected.notes}</p>}
             <div className="iv-form-actions">
               {selected.status === 'scheduled' && !isPastSlot(selected.interview_date, selected.start_time) && (

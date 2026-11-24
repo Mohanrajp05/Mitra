@@ -177,6 +177,10 @@ def test_search_jobs_parses_deduplicates_and_ranks(monkeypatch):
 
 def test_search_jobs_requires_api_key(monkeypatch):
     monkeypatch.delenv("TAVILY_API_KEY", raising=False)
+    # Keep JSearch out of the way so the Tavily fallback is the only path.
+    monkeypatch.setenv("JSEARCH_API_KEY", "")
+    monkeypatch.delenv("OPENWEBNINJA_API_KEY", raising=False)
+    monkeypatch.delenv("RAPIDAPI_KEY", raising=False)
     js.clear_cache()
     with pytest.raises(TavilyError):
         asyncio.run(search_jobs(JobPreferences(role="Software Engineer", location="Bengaluru")))

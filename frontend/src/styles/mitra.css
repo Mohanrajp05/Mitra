@@ -84,6 +84,15 @@
 .primary-btn.full, .outline-btn.full { width: 100%; }
 .me { position: relative; display: inline-flex; }
 .online { position: absolute; right: 0; bottom: 0; width: 9px; height: 9px; border-radius: 50%; background: #22a85a; border: 2px solid var(--card); }
+.role-badge {
+  display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
+}
+.role-badge-recruiter { background: #ece8ff; color: #5b45c9; border: 1px solid #d9d1ff; }
+.role-badge-candidate { background: #e4f7ef; color: #127a53; border: 1px solid #c4ecdc; }
+.mitra-root[data-theme="dark"] .role-badge-recruiter { background: #2b2350; color: #c7bbff; border-color: #3d3270; }
+.mitra-root[data-theme="dark"] .role-badge-candidate { background: #133a2d; color: #9de6c6; border-color: #1d5843; }
+
 .avatar {
   display: inline-grid; place-items: center; border-radius: 50%; color: white; font-weight: 700; flex: none;
 }

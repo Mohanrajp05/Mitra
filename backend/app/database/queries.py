@@ -8,12 +8,14 @@ from typing import Any
 
 JOB_COLUMNS = (
     "id, owner_user_id, title, company, description, required_skills, "
-    "experience_required, location, status, created_at, updated_at"
+    "experience_required, location, status, experience_level, job_type, "
+    "internship_duration_months, compensation_type, salary_stipend, work_mode, "
+    "required_documents, application_deadline, created_at, updated_at"
 )
 
 CANDIDATE_COLUMNS = (
     "id, owner_user_id, full_name, email, phone, skills, experience_years, "
-    "education, resume_text, extracted_profile, created_at, updated_at"
+    "education, location, resume_text, extracted_profile, created_at, updated_at"
 )
 
 JOB_UPDATE_FIELDS = {
@@ -24,6 +26,14 @@ JOB_UPDATE_FIELDS = {
     "experience_required",
     "location",
     "status",
+    "experience_level",
+    "job_type",
+    "internship_duration_months",
+    "compensation_type",
+    "salary_stipend",
+    "work_mode",
+    "required_documents",
+    "application_deadline",
 }
 
 CANDIDATE_UPDATE_FIELDS = {
@@ -33,6 +43,7 @@ CANDIDATE_UPDATE_FIELDS = {
     "skills",
     "experience_years",
     "education",
+    "location",
     "resume_text",
     "extracted_profile",
 }
@@ -68,9 +79,11 @@ def create_job(connection, owner_user_id: str, data: dict[str, Any]) -> dict[str
             f"""
             INSERT INTO jobs (
                 owner_user_id, title, company, description, required_skills,
-                experience_required, location, status
+                experience_required, location, status, experience_level, job_type,
+                internship_duration_months, compensation_type, salary_stipend,
+                work_mode, required_documents, application_deadline
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING {JOB_COLUMNS}
             """,
             (
@@ -82,6 +95,14 @@ def create_job(connection, owner_user_id: str, data: dict[str, Any]) -> dict[str
                 data.get("experience_required"),
                 data.get("location"),
                 data.get("status", "open"),
+                data.get("experience_level"),
+                data.get("job_type"),
+                data.get("internship_duration_months"),
+                data.get("compensation_type"),
+                data.get("salary_stipend"),
+                data.get("work_mode"),
+                data.get("required_documents") or [],
+                data.get("application_deadline"),
             ),
         )
         return cursor.fetchone()
@@ -166,9 +187,9 @@ def create_candidate(
             f"""
             INSERT INTO candidates (
                 owner_user_id, full_name, email, phone, skills,
-                experience_years, education, resume_text
+                experience_years, education, location, resume_text
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING {CANDIDATE_COLUMNS}
             """,
             (
@@ -179,6 +200,7 @@ def create_candidate(
                 data.get("skills") or [],
                 data.get("experience_years"),
                 data.get("education"),
+                data.get("location"),
                 data.get("resume_text"),
             ),
         )

@@ -9,14 +9,24 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from app.core.security import get_current_user
 from app.schemas.candidate import CandidateCreate, CandidateResponse, CandidateUpdate
 from app.schemas.consent import ConsentUpdate
-from app.services import candidate_service
+from app.services import candidate_portal_service, candidate_service
 from app.services import rag_service
 
 router = APIRouter(prefix="/api/candidates", tags=["Candidates"])
 
 
+def _require_recruiter(current_user: dict) -> str:
+    user_id = str(current_user.get("id") or "")
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated.")
+    if candidate_portal_service.is_candidate(user_id):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Recruiter access required.")
+    return user_id
+
+
 @router.get("", response_model=list[CandidateResponse])
 def list_candidates(current_user: dict = Depends(get_current_user)):
+    _require_recruiter(current_user)
     return candidate_service.list_candidates(current_user["id"])
 
 

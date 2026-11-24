@@ -3,7 +3,7 @@ import logging
 import os
 import re
 import time
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field, fields, replace
 from difflib import get_close_matches
 from typing import Any
 from urllib.parse import quote_plus, urlsplit
@@ -176,7 +176,24 @@ def normalize_location(value: str | None) -> str | None:
     return cleaned
 
 
-BAD_URL_FRAGMENTS = ("/q-", "-jobs.html", "/jobs-in-", "-jobs-in-", "/profile_")
+BAD_URL_FRAGMENTS = (
+    "/q-",
+    "-jobs.html",
+    "/jobs-in-",
+    "-jobs-in-",
+    "/profile_",
+    "/jobs/search",
+    "/jobs/collections",
+    "/jobs?",
+    "?q=",
+    "?k=",
+    "?keywords=",
+    "/search/jobs",
+    "/job-search",
+    "/career-search",
+    "/careers/search",
+    "jobs-near-you",
+)
 BAD_HOSTS = ("rocketreach.co", "zoominfo.com")
 GOOD_URL_FRAGMENTS = ("/job/", "/viewjob", "/jobs/view/", "/job-posting/")
 ATS_HOSTS = ("greenhouse.io", "lever.co", "ashbyhq.com", "workday")
@@ -243,6 +260,9 @@ def _url_quality(url: str) -> int:
     if any(bad in host for bad in BAD_HOSTS):
         return -1
     if any(fragment in lowered for fragment in BAD_URL_FRAGMENTS):
+        return -1
+    path = urlsplit(lowered).path
+    if path.endswith("-jobs") or path.endswith("/jobs"):
         return -1
     if any(good in lowered for good in GOOD_URL_FRAGMENTS):
         return 1
@@ -350,8 +370,50 @@ JOB_SEARCH_PATTERN = re.compile(
     r"|\b(?:need|want|require)\b[\s\S]{0,60}?\bfull[\s-]?time\s+job\b"
     r"|\b(?:are|is)\s+(?:companies|there)\s+hiring\b"
     r"|\b(?:unemployed|searching\s+for\s+(?:a\s+)?(?:developer|engineer|job|role))\b"
-    r"|\b(?:list|share)\b[\s\S]{0,40}?\b(?:vacancies|openings|jobs)\b",
+    r"|\b(?:list|share)\b[\s\S]{0,40}?\b(?:vacancies|openings|jobs)\b"
+    r"|\b(?:list|show|share|find)\b[\s\S]{0,40}?\blinks?\b[\s\S]{0,60}?\bjobs?\b",
     re.IGNORECASE,
+)
+
+# "these companies", "their openings", "the companies you listed" → a
+# company-scoped follow-up, never a fresh generic search.
+COMPANY_REFERENCE_PATTERN = re.compile(
+    r"\b(?:these|those|above|same|previous|aforementioned)\s+"
+    r"(?:companies|employers|organi[sz]ations|hiring\s+companies)\b"
+    r"|\b(?:the\s+)?companies\s+(?:that\s+)?you\s+(?:just\s+)?"
+    r"(?:listed|mentioned|showed|found|shared|named)\b"
+    r"|\b(?:their|its)\s+(?:job\s+)?(?:openings?|vacancies|jobs?|links?|careers?)\b",
+    re.IGNORECASE,
+)
+
+# "list the companies that are offering jobs in Bangalore" → company names
+# grouped from real postings for the remembered role/location.
+COMPANY_LISTING_PATTERN = re.compile(
+    r"\b(?:list|show|give|share|find|which)\b[\s\S]{0,50}?\bcompanies\b"
+    r"[\s\S]{0,80}?\b(?:offering|posting|advertising|with\s+(?:jobs?|vacancies|openings))\b"
+    r"|\bcompanies\s+(?:that\s+(?:are\s+)?)?(?:offering|posting|advertising)\s+"
+    r"(?:jobs?|vacancies|openings|roles?)\b"
+    r"|\bwhich\s+companies\s+(?:are\s+)?(?:offering|posting|advertising)\b",
+    re.IGNORECASE,
+)
+
+# Salary / career-path questions are career information, not a job search.
+CAREER_INFO_PATTERN = re.compile(
+    r"\b(?:average|typical|expected|median|current|market)\s+"
+    r"(?:salary|pay|compensation|ctc|package|payscale)\b"
+    r"|\b(?:salary|compensation|ctc|payscale|pay\s+scale|pay\s+package)\s+"
+    r"(?:for|of|in|range|expectation|structure)\b"
+    r"|\bhow\s+much\s+(?:does|do|can|should|would)\b[\s\S]{0,40}?"
+    r"\b(?:earn|make|get\s+paid|salary)\b"
+    r"|\b(?:salary|compensation|ctc)\s+(?:range|band|benchmark)\b"
+    r"|\bcareer\s+(?:path|growth|progression|switch|change|options|scope|ladder)\b"
+    r"|\bcompare\b[\s\S]{0,80}?"
+    r"\b(?:engineer|developer|manager|analyst|designer|scientist|architect|role|career)\b",
+    re.IGNORECASE,
+)
+
+_CANDIDATE_DOCUMENT_PATTERN = re.compile(
+    r"\b(?:candidates?|resumes?|cvs?|applicants?|profiles?)\b", re.IGNORECASE
 )
 
 CLARIFICATION_MARKER = "job_search_prompt"
@@ -399,6 +461,170 @@ class JobPreferences:
         return bits
 
 
+@dataclass
+class SessionContext:
+    """Compact, session-scoped job-search context rebuilt from stored turns.
+
+    Only assistant messages produced by the job-search services contribute, so
+    an unrelated question later in the conversation can never overwrite the
+    remembered role, experience, location or company list.
+    """
+
+    preferences: JobPreferences = field(default_factory=JobPreferences)
+    companies: list[dict[str, Any]] = field(default_factory=list)
+    job_urls: list[str] = field(default_factory=list)
+    pending_missing: str = ""
+
+    def summary_text(self, max_companies: int = 5) -> str:
+        """Short human/LLM-readable summary used only for intent disambiguation."""
+        bits: list[str] = []
+        prefs = self.preferences
+        if prefs.role:
+            bits.append(f"Role: {prefs.role}")
+        if prefs.experience:
+            bits.append(f"Experience: {prefs.experience}")
+        if prefs.location:
+            bits.append(f"Location: {prefs.location}")
+        elif prefs.remote:
+            bits.append("Location: Remote")
+        if prefs.skills:
+            bits.append(f"Skills: {', '.join(prefs.skills[:5])}")
+        names = [str(item.get("company") or "") for item in self.companies[:max_companies]]
+        names = [name for name in names if name]
+        if names:
+            bits.append(f"Companies already listed: {', '.join(names)}")
+        if self.pending_missing:
+            bits.append(f"Waiting for: {self.pending_missing}")
+        return "; ".join(bits)
+
+
+_PREFERENCE_FIELDS = tuple(item.name for item in fields(JobPreferences))
+
+
+def _snapshot_preferences(snapshot: Any, current: JobPreferences) -> JobPreferences:
+    """Merge one stored preference snapshot into the accumulated context.
+
+    Non-empty values in the snapshot win because it is the most recent
+    server-generated record for this session. Empty values never erase context.
+    """
+    if not isinstance(snapshot, dict):
+        return current
+    updates: dict[str, Any] = {}
+    for name in _PREFERENCE_FIELDS:
+        value = snapshot.get(name)
+        if name == "skills":
+            merged = _merge_list(current.skills, value or [])
+            if merged != current.skills:
+                updates["skills"] = merged
+        elif value not in (None, "", False):
+            updates[name] = value
+    return replace(current, **updates) if updates else current
+
+
+def _company_entry(listing: dict[str, Any]) -> dict[str, Any] | None:
+    name = _clean_text(listing.get("company"))
+    if not name or name.casefold() in {"not specified", "company not specified", "unknown"}:
+        return None
+    return {
+        "company": name,
+        "title": _clean_text(listing.get("title")) or None,
+        "location": _clean_text(listing.get("location")) or None,
+        "url": _clean_text(listing.get("url")) or None,
+    }
+
+
+def _dedupe_companies(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    seen: set[str] = set()
+    result: list[dict[str, Any]] = []
+    for entry in entries:
+        key = _clean_text(entry.get("company")).casefold()
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        result.append(entry)
+    return result
+
+
+def _message_sources(message: dict[str, Any]) -> list[dict[str, Any]]:
+    sources = message.get("sources") or []
+    if isinstance(sources, dict):
+        sources = [sources]
+    return [source for source in sources if isinstance(source, dict)]
+
+
+def build_session_context(history: list[dict[str, Any]] | None) -> SessionContext:
+    """Build structured job-search context from this session's stored messages.
+
+    * Preferences come from server-generated ``job_preferences`` /
+      ``job_search_prompt`` sources, so arbitrary user text later in the chat
+      cannot silently change the remembered role.
+    * Companies and direct links come from the most recent job/company result
+      set (or the most recent non-empty one).
+    * ``pending_missing`` only reflects the trailing assistant question; an
+      answered or superseded question never keeps hijacking new messages.
+    """
+    context = SessionContext()
+    prefs = JobPreferences()
+    companies: list[dict[str, Any]] = []
+
+    for message in list(history or []):
+        if not isinstance(message, dict) or str(message.get("role") or "") != "assistant":
+            continue
+        message_companies: list[dict[str, Any]] = []
+        message_urls: list[str] = []
+        for source in _message_sources(message):
+            kind = str(source.get("kind") or "")
+            if kind == "job_preferences":
+                prefs = _snapshot_preferences(source, prefs)
+            elif kind == "job_search_prompt":
+                prefs = _snapshot_preferences(source.get("preferences"), prefs)
+            elif kind in ("job", "company"):
+                entry = _company_entry(source)
+                if entry:
+                    message_companies.append(entry)
+                url = _clean_text(source.get("url"))
+                if url.startswith(("http://", "https://")):
+                    message_urls.append(url)
+        if message_companies:
+            companies = _dedupe_companies(message_companies)
+        if message_urls:
+            context.job_urls = list(dict.fromkeys(message_urls))
+
+    context.preferences = prefs
+    context.companies = companies
+    context.pending_missing = _pending_job_search_missing(history)
+    return context
+
+
+def _pending_job_search_missing(history: list[dict[str, Any]] | None) -> str:
+    """Missing slot from the *trailing* assistant question, if still open."""
+    for message in reversed(list(history or [])):
+        if not isinstance(message, dict):
+            continue
+        if str(message.get("role") or "") != "assistant":
+            continue
+        for source in _message_sources(message):
+            kind = str(source.get("kind") or "")
+            if kind == "job_search_prompt":
+                missing = source.get("missing")
+                if isinstance(missing, str) and missing.strip():
+                    return missing.strip()
+                if isinstance(missing, (list, tuple)) and missing:
+                    return str(missing[0]).strip()
+            if kind in (
+                "job_preferences",
+                "job",
+                "company",
+                "job_search_no_results",
+                "company_vacancy_coverage",
+            ):
+                # A later job answer supersedes any earlier clarification.
+                return ""
+        # The latest assistant message was not a job-search question.
+        return ""
+    return ""
+
+
 _TAVILY_DOMAIN_GROUPS = (
     ("naukri", ["naukri.com"]),
     ("linkedin", ["linkedin.com"]),
@@ -429,6 +655,35 @@ def _build_tavily_queries(prefs: JobPreferences) -> list[tuple[str, list[str], s
 
 def is_job_search(text: str) -> bool:
     return bool(JOB_SEARCH_PATTERN.search((text or "").strip()))
+
+
+def references_previous_companies(text: str) -> bool:
+    """True when the message points back at companies already listed."""
+    return bool(COMPANY_REFERENCE_PATTERN.search((text or "").strip()))
+
+
+def is_company_listing_query(text: str) -> bool:
+    """Detect 'list the companies offering jobs in Bangalore' style requests."""
+    cleaned = (text or "").strip()
+    if not cleaned or references_previous_companies(cleaned):
+        return False
+    return bool(COMPANY_LISTING_PATTERN.search(cleaned))
+
+
+def is_career_info_question(text: str) -> bool:
+    """Salary / career-path / role-comparison questions.
+
+    Candidate and resume comparisons stay document questions, so they are
+    excluded even though they contain the word "compare".
+    """
+    cleaned = (text or "").strip()
+    if not cleaned:
+        return False
+    if _CANDIDATE_DOCUMENT_PATTERN.search(cleaned) and re.search(
+        r"\bcompare\b", cleaned, re.IGNORECASE
+    ):
+        return False
+    return bool(CAREER_INFO_PATTERN.search(cleaned))
 
 
 def is_company_hiring_query(text: str) -> bool:
@@ -710,27 +965,33 @@ def _parse_listing(item: dict[str, Any], prefs: JobPreferences) -> dict[str, Any
     }
 
 
-def _dedupe_and_rank(listings: list[dict[str, Any]], prefs: JobPreferences) -> list[dict[str, Any]]:
-    seen: set[str] = set()
-    unique: list[dict[str, Any]] = []
-    for listing in listings:
-        key = (
-            re.sub(r"[^a-z0-9]", "", listing["title"].casefold()),
-            re.sub(r"[^a-z0-9]", "", str(listing.get("company") or "").casefold()),
-            listing["url"].split("?")[0].casefold(),
-        )
-        if key in seen:
-            continue
-        seen.add(key)
-        unique.append(listing)
+def _canonical_url(url: str) -> str:
+    """Host + path only, so tracking parameters cannot hide a duplicate."""
+    parts = urlsplit(url or "")
+    return f"{parts.netloc.casefold()}{parts.path.rstrip('/').casefold()}"
 
+
+def _dedupe_and_rank(listings: list[dict[str, Any]], prefs: JobPreferences) -> list[dict[str, Any]]:
     role_terms = [term.casefold() for term in re.findall(r"[A-Za-z]+", prefs.role)]
-    for listing in unique:
+    candidates: list[dict[str, Any]] = []
+    seen_urls: set[str] = set()
+
+    for listing in listings:
+        url = _clean_text(listing.get("url"))
+        if not url or _url_quality(url) < 0:
+            continue
+        canonical = _canonical_url(url)
+        if canonical in seen_urls:
+            # Several companies sharing one generic job-board URL is the
+            # reported failure mode: keep only one evidence-backed row.
+            continue
+        seen_urls.add(canonical)
+
         combined = f"{listing['title']} {listing.get('description') or ''}".casefold()
         relevance = 0.0
         if any(term in combined for term in role_terms):
             relevance += 4.0
-        relevance += 2.0 * _url_quality(listing["url"])
+        relevance += 2.0 * _url_quality(url)
         relevance += min(len([skill for skill in prefs.skills if skill.casefold() in combined]), 4) * 1.5
         if prefs.location and prefs.location.casefold() in combined:
             relevance += 2.0
@@ -741,9 +1002,36 @@ def _dedupe_and_rank(listings: list[dict[str, Any]], prefs: JobPreferences) -> l
                 relevance += 3.0
         if prefs.platform and listing["source"].casefold() == prefs.platform.casefold():
             relevance += 2.0
-        listing["relevance"] = relevance + listing["score"]
+        listing["relevance"] = relevance + float(listing.get("score") or 0.0)
+        candidates.append(listing)
 
-    unique.sort(key=lambda item: item["relevance"], reverse=True)
+    candidates.sort(key=lambda item: item["relevance"], reverse=True)
+
+    # Drop clearly unrelated roles only when there are enough results to be
+    # useful. A single fallback row is kept so an outage never hides a result.
+    if prefs.role and len(candidates) > 3:
+        kept: list[dict[str, Any]] = []
+        for listing in candidates:
+            combined = f"{listing['title']} {listing.get('description') or ''}".casefold()
+            role_match = any(term in combined for term in role_terms if len(term) > 2)
+            skill_match = any(skill.casefold() in combined for skill in prefs.skills)
+            location_match = bool(prefs.location) and prefs.location.casefold() in combined
+            if role_match or skill_match or location_match:
+                kept.append(listing)
+        if len(kept) >= 3:
+            candidates = kept
+
+    unique: list[dict[str, Any]] = []
+    seen_titles: set[tuple[str, str]] = set()
+    for listing in candidates:
+        key = (
+            re.sub(r"[^a-z0-9]", "", listing["title"].casefold()),
+            re.sub(r"[^a-z0-9]", "", str(listing.get("company") or "").casefold()),
+        )
+        if key in seen_titles:
+            continue
+        seen_titles.add(key)
+        unique.append(listing)
     return unique[:TAVILY_MAX_RESULTS]
 
 
@@ -934,13 +1222,17 @@ def format_job_answer(listings: list[dict[str, Any]], prefs: JobPreferences) -> 
     ]
     for listing in listings[:TAVILY_MAX_RESULTS]:
         title = listing.get("title") or "Untitled role"
-        company = listing.get("company") or "Not specified"
-        location = listing.get("location") or "Not specified"
-        experience = listing.get("experience") or "Not specified"
-        lines.append(
-            f"- {title} at {company} | {location} | {experience} | "
-            f"{listing.get('employment_type') or 'Not specified'}"
-        )
+        company = listing.get("company") or "Company not stated"
+        location = listing.get("location") or "Location not stated"
+        experience = listing.get("experience")
+        parts = [f"- {title} at {company}", location]
+        if experience:
+            parts.append(experience)
+        if listing.get("employment_type"):
+            parts.append(listing["employment_type"])
+        if listing.get("salary"):
+            parts.append(f"Salary: {listing['salary']}")
+        lines.append(" | ".join(parts))
         if listing.get("url"):
             lines.append(f"  Apply: {listing['url']}")
     return "\n".join(lines)
@@ -955,6 +1247,43 @@ def format_company_answer(
             f"{prefs.role or 'that role'} in {prefs.location or 'the requested location'}. "
             "Try a broader role or location."
         )
+def format_company_answer(
+    listings: list[dict[str, Any]], prefs: JobPreferences
+) -> str:
+    if not listings:
+        return (
+            "I could not find company hiring information for "
+            f"{prefs.role or 'that role'} in {prefs.location or 'the requested location'}. "
+            "Try a broader role or location."
+        )
+
+    job_listings = [listing for listing in listings if listing.get("kind") in (None, "job")]
+    if job_listings:
+        groups: dict[str, list[dict[str, Any]]] = {}
+        for listing in job_listings:
+            name = _clean_text(listing.get("company")) or "Company not stated"
+            groups.setdefault(name, []).append(listing)
+
+        scope = f"{prefs.role or 'your role'}"
+        if prefs.location:
+            scope += f" in {prefs.location}"
+        lines = [f"Companies with verified public postings for {scope}:"]
+        for name, jobs in groups.items():
+            jobs.sort(key=lambda item: item.get("relevance", 0.0), reverse=True)
+            best = jobs[0]
+            title = best.get("title") or prefs.role or "Hiring"
+            url = best.get("url")
+            suffix = f" (+{len(jobs) - 1} more)" if len(jobs) > 1 else ""
+            line = f"- {name} — {title}{suffix}"
+            if url:
+                line += f"\n  Link: {url}"
+            lines.append(line)
+        lines.append(
+            "These are publicly indexed results, not verified open positions. "
+            "Check the original posting before applying."
+        )
+        return "\n".join(lines)
+
     lines = [
         f"Companies that may be hiring for {prefs.role or 'your role'} "
         "(general web results, not verified vacancies):"
@@ -1089,6 +1418,220 @@ async def search_hiring_companies(prefs: JobPreferences) -> list[dict[str, Any]]
             )
             break
     return listings
+
+
+def _company_tokens(name: str) -> list[str]:
+    cleaned = re.sub(
+        r"\b(?:pvt|private|ltd|limited|inc|corp|corporation|llc|services|"
+        r"solutions|technologies|technology|systems|india|global|group|labs|"
+        r"infotech|software|consulting|consultancy)\b",
+        " ",
+        (name or "").casefold(),
+    )
+    return [token for token in re.findall(r"[a-z0-9]+", cleaned) if len(token) >= 3]
+
+
+def _company_matches(name: str, listing: dict[str, Any]) -> bool:
+    """Evidence check: the requested company must be mentioned in the result."""
+    requested = _clean_text(name)
+    haystack = " ".join(
+        _clean_text(listing.get(field))
+        for field in ("company", "title", "description", "url")
+    ).casefold()
+    if not requested or not haystack:
+        return False
+    normalized_requested = re.sub(r"[^a-z0-9]", "", requested.casefold())
+    if normalized_requested and normalized_requested in re.sub(r"[^a-z0-9]", "", haystack):
+        return True
+    tokens = _company_tokens(requested)
+    return bool(tokens) and all(token in haystack for token in tokens)
+
+
+def format_company_vacancy_answer(
+    listings: list[dict[str, Any]],
+    prefs: JobPreferences,
+    coverage: dict[str, Any] | None = None,
+) -> str:
+    coverage = coverage or {"requested": [], "verified": [], "unverified": []}
+    requested = coverage.get("requested") or []
+    if not requested:
+        requested = sorted({str(item.get("company") or "") for item in listings if item.get("company")})
+        requested = [name for name in requested if name]
+
+    scope = f"{prefs.role or 'your role'}"
+    if prefs.location:
+        scope += f" in {prefs.location}"
+    lines = [f"Verified postings from the companies in this conversation for {scope}:"]
+    found_any = False
+    for company in requested:
+        rows = [listing for listing in listings if _company_matches(company, listing)]
+        if not rows:
+            lines.append(
+                f"- {company}: I could not verify a current individual posting "
+                "(check the company's official careers page or ask for a broader search)."
+            )
+            continue
+        found_any = True
+        for listing in rows[:2]:
+            title = listing.get("title") or prefs.role or "Hiring"
+            location = listing.get("location") or "Location not stated"
+            experience = listing.get("experience")
+            parts = [f"- {company} — {title}", location]
+            if experience:
+                parts.append(experience)
+            if listing.get("salary"):
+                parts.append(f"Salary: {listing['salary']}")
+            lines.append(" | ".join(parts))
+            if listing.get("url"):
+                lines.append(f"  Apply: {listing['url']}")
+
+    if not found_any:
+        lines.append(
+            "I could not verify a current individual posting for any of those "
+            "companies. Try a broader role or location."
+        )
+    lines.append(
+        "These are publicly indexed results, not verified open positions. "
+        "Check the original posting before applying."
+    )
+    return "\n".join(lines)
+
+
+async def _search_tavily_for_company(
+    prefs: JobPreferences, company: str
+) -> list[dict[str, Any]]:
+    """Tavily fallback restricted to a single named company."""
+    api_key = os.getenv("TAVILY_API_KEY", "").strip()
+    if not api_key:
+        raise TavilyError("Job search is not configured. Please add the Tavily API key on the server.")
+
+    role = prefs.role or "jobs"
+    location = prefs.location or ("Remote" if prefs.remote else "India")
+    query = f'"{role}" "{company}" jobs apply {location}'
+    validate_with_llm = os.getenv("JOB_SEARCH_LLM_VALIDATION", "true").strip().casefold() in {
+        "1", "true", "yes"
+    }
+    llm_client = _tavily_llm_client() if validate_with_llm else None
+
+    try:
+        async with httpx.AsyncClient(timeout=TAVILY_TIMEOUT_SECONDS) as client:
+            payload: dict[str, Any] = {
+                "api_key": api_key,
+                "query": query,
+                "search_depth": "advanced",
+                "max_results": 6,
+                "include_answer": False,
+                "include_raw_content": False,
+                "exclude_domains": list(_TAVILY_EXCLUDE_DOMAINS),
+            }
+            time_range = os.getenv("TAVILY_TIME_RANGE", "").strip()
+            if time_range:
+                payload["time_range"] = time_range
+            response = await client.post(TAVILY_API_URL, json=payload)
+            response.raise_for_status()
+            data = response.json()
+    except httpx.HTTPStatusError as exc:
+        if exc.response.status_code in (401, 403):
+            raise TavilyError("Job search is not configured correctly. Please check the Tavily API key on the server.") from exc
+        if exc.response.status_code == 429:
+            raise TavilyError("The job search service is rate limited. Please try again shortly.") from exc
+        raise TavilyError("The job search service could not complete the request. Please try again.") from exc
+    except httpx.HTTPError as exc:
+        raise TavilyError("The job search service could not be reached. Please try again shortly.") from exc
+    except ValueError as exc:
+        raise TavilyError("The job search service returned an unreadable response.") from exc
+
+    listings: list[dict[str, Any]] = []
+    llm_validations = 0
+    max_llm_validations = int(os.getenv("JOB_SEARCH_MAX_LLM_VALIDATIONS", "40"))
+    for item in data.get("results") or []:
+        if not isinstance(item, dict):
+            continue
+        raw_url = _clean_text(item.get("url"))
+        if not raw_url.startswith(("http://", "https://")) or _url_quality(raw_url) < 0:
+            continue
+        combined = f"{_clean_text(item.get('title'))} {_clean_text(item.get('content'))}".casefold()
+        if company.casefold() not in combined and not _company_matches(company, {"company": company, "title": item.get("title"), "description": item.get("content"), "url": raw_url}):
+            continue
+        parsed = _parse_listing(item, prefs)
+        if not parsed:
+            continue
+        extraction = None
+        if llm_client is not None and llm_validations < max_llm_validations:
+            llm_validations += 1
+            extraction = await _extract_job_posting(item, llm_client)
+        if extraction is not None and not extraction.is_single_posting:
+            continue
+        if extraction is not None:
+            if extraction.title:
+                parsed["title"] = _clean_text(extraction.title)
+            if extraction.company:
+                parsed["company"] = _clean_text(extraction.company)
+            if extraction.location:
+                parsed["location"] = normalize_location(extraction.location) or _clean_text(extraction.location)
+            if extraction.employment_type:
+                parsed["employment_type"] = _clean_text(extraction.employment_type)
+            if extraction.apply_url and extraction.apply_url.startswith(("http://", "https://")):
+                parsed["url"] = extraction.apply_url
+        parsed["company"] = company
+        listings.append(parsed)
+    return listings
+
+
+async def search_company_vacancies(
+    prefs: JobPreferences, companies: list[Any], per_company_limit: int = 2
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Search actual vacancies from the companies mentioned in this session."""
+    from app.services.job_providers import JSearchProvider
+
+    requested: list[str] = []
+    verified_names: list[str] = []
+    unverified_names: list[str] = []
+    found: list[dict[str, Any]] = []
+
+    for entry in list(companies or [])[:6]:
+        name = entry.get("company") if isinstance(entry, dict) else str(entry or "")
+        name = _clean_text(name)
+        if not name:
+            continue
+        requested.append(name)
+        rows: list[dict[str, Any]] = []
+        try:
+            query = f"{prefs.role or 'jobs'} at {name} in {prefs.location or 'India'}"
+            rows = await JSearchProvider().search(prefs, query=query)
+        except Exception:
+            rows = []
+        matches = [row for row in rows if _company_matches(name, row)]
+        if not matches:
+            try:
+                matches = await _search_tavily_for_company(prefs, name)
+            except TavilyError:
+                matches = []
+        matches = _dedupe_and_rank(matches, prefs)[:per_company_limit]
+        if matches:
+            verified_names.append(name)
+            found.extend(matches)
+        else:
+            unverified_names.append(name)
+
+    # De-duplicate across companies: one generic job-board URL must never
+    # appear once per company.
+    unique_found: list[dict[str, Any]] = []
+    seen_urls: set[str] = set()
+    for row in found:
+        key = _canonical_url(_clean_text(row.get("url")))
+        if key in seen_urls:
+            continue
+        seen_urls.add(key)
+        unique_found.append(row)
+    found = unique_found
+
+    coverage = {
+        "requested": requested,
+        "verified": verified_names,
+        "unverified": unverified_names,
+    }
+    return found, coverage
 
 
 def clear_cache() -> None:

@@ -44,6 +44,17 @@ const SUGGESTED_QUESTIONS = [
   "Identify missing skills in a candidate's profile.",
 ]
 
+const CANDIDATE_GREETING_REPLY =
+  "Hello! I'm your AI assistant. I can help you improve your resume, plan your career, prepare for interviews, and understand job requirements. Ask me a question to get started.";
+
+const CANDIDATE_SUGGESTED_QUESTIONS = [
+  'How can I improve my resume?',
+  'Analyze my skills and suggest career growth.',
+  'Help me prepare for my next interview.',
+  "Explain my application status and next steps.",
+  'Suggest skills to strengthen my profile for a target role.',
+];
+
 const AGENTS = [
   { icon: 'target', name: 'Job Analysis' },
   { icon: 'file', name: 'Resume Parsing' },
@@ -367,7 +378,7 @@ function mergeScope(current, additions) {
   return [...merged.values()]
 }
 
-export default function AssistantPage() {
+export default function AssistantPage({ mode = 'recruiter' }) {
   const [question, setQuestion] = useState('')
   const [asking, setAsking] = useState(false)
   const [chatError, setChatError] = useState('')
@@ -384,6 +395,7 @@ export default function AssistantPage() {
   })
   const [lastQuestion, setLastQuestion] = useState('')
   const [messagesLoading, setMessagesLoading] = useState(false)
+  const recruiterMode = mode !== 'candidate'
 
   const [sessions, setSessions] = useState([])
   const [sessionsLoading, setSessionsLoading] = useState(true)
@@ -530,7 +542,7 @@ export default function AssistantPage() {
 
 
   useEffect(() => {
-    if (!interviewOpen) return
+    if (!recruiterMode || !interviewOpen) return
     if (interviewSession?.status !== 'in_progress') return
     if (interviewQuestion) return
     if (interviewSessionFetchRef.current) return
@@ -539,7 +551,7 @@ export default function AssistantPage() {
       interviewSessionFetchRef.current = false
     })
 
-  }, [interviewOpen, interviewSession?.id, interviewSession?.status, interviewQuestion?.question_number])
+  }, [recruiterMode, interviewOpen, interviewSession?.id, interviewSession?.status, interviewQuestion?.question_number])
 
   useEffect(() => {
     const textarea = textareaRef.current
@@ -586,6 +598,7 @@ export default function AssistantPage() {
   }, [])
 
   useEffect(() => {
+    if (!recruiterMode) return
     let active = true
     async function restoreInterview() {
       setInterviewLoading(true)
@@ -1601,7 +1614,9 @@ export default function AssistantPage() {
 
   // Interview is a dedicated conversation, separate from the normal chat session.
   // The mode is explicit so chat and interview never share message state or IDs.
-  const interviewModeActive = activeMode === 'interview'
+  const interviewModeActive = recruiterMode && activeMode === 'interview'
+  const greetingReply = recruiterMode ? GREETING_REPLY : CANDIDATE_GREETING_REPLY
+  const suggestions = recruiterMode ? SUGGESTED_QUESTIONS : CANDIDATE_SUGGESTED_QUESTIONS
   const visibleMessages = interviewModeActive ? interviewMessages : messages
 
   return (
@@ -1609,7 +1624,9 @@ export default function AssistantPage() {
       <header className="page-header">
         <div>
           <h1 className="page-title">Mitra Assistant</h1>
-          <p className="page-sub">Ask anything about your jobs, candidates, or recruitment workflow.</p>
+          <p className="page-sub">{recruiterMode
+            ? 'Ask anything about your jobs, candidates, or recruitment workflow.'
+            : 'Ask anything about your resume, skills, career growth, applications, or interviews.'}</p>
         </div>
       </header>
 
@@ -1730,7 +1747,7 @@ export default function AssistantPage() {
                   : interviewSession?.status === 'completed'
                     ? 'Interview complete · Final report'
                     : 'Interview setup · Resume-based interview')
-                : 'Recruiter Support agent'}</small>
+                : (recruiterMode ? 'Recruiter Support agent' : 'Candidate Support agent')}</small>
             </div>
             <div className="as-chat-head-actions">
               <button type="button" className="as-icon-btn as-history-toggle" onClick={() => setHistoryOpen(true)} aria-label="Open chat history" title="Chat history">
@@ -1758,7 +1775,7 @@ export default function AssistantPage() {
           )}
 
           <div className="as-messages" ref={messagesRef} role="log" aria-live="polite">
-            {interviewOpen && (
+            {recruiterMode && interviewOpen && (
               <div className="as-interview-panel card">
                 <div className="as-interview-head">
                   <span className="as-interview-icon"><NwIcon name="briefcase-business" /></span>
@@ -1915,7 +1932,7 @@ export default function AssistantPage() {
               <div className="as-row">
                 <span className="as-bot" aria-hidden="true"><NwIcon name="sparkle" /></span>
                 <div className="as-bubble bot">
-                  <p>{GREETING_REPLY}</p>
+                  <p>{greetingReply}</p>
                 </div>
               </div>
             )}
@@ -1989,7 +2006,7 @@ export default function AssistantPage() {
           </div>
 
           <div className="as-suggest" aria-label="Suggested questions" hidden={interviewModeActive}>
-            {SUGGESTED_QUESTIONS.map((suggestion) => (
+            {suggestions.map((suggestion) => (
               <button key={suggestion} type="button" disabled={asking || !activeSessionId} onClick={() => sendQuestion(suggestion)}>
                 <NwIcon name="sparkle" /> {suggestion}
               </button>
